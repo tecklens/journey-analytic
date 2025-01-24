@@ -10,10 +10,13 @@
     "moduleResolution": "nodenext",
     "tsBuildInfoFile": "out-tsc/backend/tsconfig.app.tsbuildinfo",
     "emitDecoratorMetadata": true,
-    "target": "es2021"
+    "target": "es2021",
+    "experimentalDecorators": true,
+    "strictPropertyInitialization": false
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/assets/**/*"
   ],
   "exclude": [
     "out-tsc",

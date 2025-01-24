@@ -3,10 +3,10 @@
   "compilerOptions": {
     "outDir": "out-tsc/admin",
     "tsBuildInfoFile": "out-tsc/admin/tsconfig.app.tsbuildinfo",
+    "target": "ES2022",
+    "lib": ["ES2023"],
+    "skipLibCheck": true,
     "jsx": "react-jsx",
-    "lib": [
-      "dom"
-    ],
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
@@ -15,7 +15,16 @@
     ],
     "rootDir": "src",
     "module": "esnext",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
   },
   "exclude": [
     "out-tsc",
