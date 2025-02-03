@@ -2,3 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 /* You can add global styles to this file, and also import other style files */
+
+.override-geo-chart rect[x="0"] {
+    fill: transparent !important;
+}

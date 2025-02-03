@@ -8,9 +8,7 @@ import {
   IconLayoutDashboard,
   IconLock,
   IconLockAccess,
-  IconMessages,
   IconNotification,
-  IconPackages,
   IconPalette,
   IconServerOff,
   IconSettings,
@@ -19,8 +17,8 @@ import {
   IconUserOff,
   IconUsers,
 } from '@tabler/icons-react'
-import { AudioWaveform, Command, GalleryVerticalEnd } from 'lucide-react'
-import { type SidebarData } from '../types'
+import {AudioWaveform, Command, GalleryVerticalEnd} from 'lucide-react'
+import {type SidebarData} from '../types'
 
 export const sidebarData: SidebarData = {
   user: {
@@ -58,17 +56,6 @@ export const sidebarData: SidebarData = {
           title: 'Tasks',
           url: '/tasks',
           icon: IconChecklist,
-        },
-        {
-          title: 'Apps',
-          url: '/apps',
-          icon: IconPackages,
-        },
-        {
-          title: 'Chats',
-          url: '/chats',
-          badge: '3',
-          icon: IconMessages,
         },
         {
           title: 'Users',
