@@ -1,0 +1,10 @@
+{
+  "name": "@journey-analysis/admin",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "admin",
+    "projectType": "application",
+    "sourceRoot": "apps/admin/src"
+  }
+}
