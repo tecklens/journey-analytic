@@ -5,7 +5,7 @@ import {PassportModule} from '@nestjs/passport';
 import {JwtModule} from '@nestjs/jwt';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {BullModule} from '@nestjs/bullmq';
-import {UserRepository, UserTokenRepository, ProjectRepository, MemberRepository, UserActivityRepository} from "@backend/repositories/maria";
+import {UserRepository, UserTokenRepository, ProjectRepository, MemberRepository, UserActivityRepository} from "../../repositories/maria";
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import {JwtStrategy, RefreshJwtStrategy} from "./strategy";
 

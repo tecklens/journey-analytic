@@ -7,11 +7,27 @@ import {ChannelModule} from './app/channel/channel.module';
 import {SnowflakeIdModule} from "@street-devs/nest-snowflake-id";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import {entities} from "./repositories/maria/entities";
+import {AuthModule} from "./app/auth/auth.module";
+import {CacheModule} from "@nestjs/cache-manager";
+import {redisStore} from "cache-manager-redis-yet";
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
+        }),
+        CacheModule.registerAsync({
+            imports: [ConfigModule],
+            inject: [ConfigService],
+            isGlobal: true,
+            useFactory: async (configService: ConfigService) => ({
+                store: await redisStore({
+                    socket: {
+                        host: configService.get('REDIS_HOST'),
+                        port: parseInt(configService.get('REDIS_PORT') ?? '3306'),
+                    },
+                }),
+            }),
         }),
         SnowflakeIdModule.forRoot({
             global: true,
@@ -58,6 +74,7 @@ import {entities} from "./repositories/maria/entities";
                 synchronize: true,
             }),
         }),
+        AuthModule,
         EventModule,
         UserModule,
         ChannelModule,

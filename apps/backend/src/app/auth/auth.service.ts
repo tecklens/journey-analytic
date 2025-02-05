@@ -27,7 +27,7 @@ import {
   ProjectRepository,
   UserActivityRepository,
   UserRepository,
-} from '@backend/repositories/maria';
+} from '../../repositories/maria';
 import {JwtService} from '@nestjs/jwt';
 import {CreateStoreDto, LoginBodyDto, PasswordResetBodyDto, UserRegistrationBodyDto,} from './dtos';
 import * as bcrypt from 'bcrypt';
@@ -37,7 +37,7 @@ import {Transactional} from 'typeorm-transactional';
 import {IFingerprint} from 'nestjs-fingerprint';
 import {InjectQueue} from '@nestjs/bullmq';
 import {Queue} from 'bullmq';
-import {ApiException, MailPayload, makeid, normalizeEmail, buildUserKey} from "@backend/types";
+import {ApiException, MailPayload, makeid, normalizeEmail, buildUserKey} from "../../types";
 
 @Injectable()
 export class AuthService {
