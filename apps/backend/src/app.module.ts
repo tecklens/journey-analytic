@@ -55,7 +55,7 @@ import {entities} from "./repositories/maria/entities";
                 database: config.get<any>('MYSQL_DB'),
                 entities: [...entities],
                 charset: 'utf8mb4_unicode_ci',
-                synchronize: false,
+                synchronize: true,
             }),
         }),
         EventModule,

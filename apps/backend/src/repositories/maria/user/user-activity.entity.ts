@@ -1,5 +1,4 @@
 import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn,} from 'typeorm';
-import {UserId} from "@journey-analytic/shared";
 
 @Entity('user_activity')
 export class UserActivityEntity {
@@ -7,7 +6,7 @@ export class UserActivityEntity {
   id: string;
 
   @Column({ name: 'user_id', length: 64 })
-  userId: UserId;
+  userId: string;
 
   @Column({ name: 'store_id', length: 64 })
   storeId: string;

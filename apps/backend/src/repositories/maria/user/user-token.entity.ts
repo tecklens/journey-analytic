@@ -1,12 +1,5 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import {AuthProviderEnum, IUserToken, UserId, UserTokenId, IUser} from "@journey-analytic/shared";
+import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn,} from 'typeorm';
+import {AuthProviderEnum, IUser, IUserToken, UserTokenId} from "@journey-analytic/shared";
 import {UserEntity} from "./user.entity";
 
 @Entity('user_token')
@@ -15,7 +8,7 @@ export class UserTokenEntity implements IUserToken {
   id: UserTokenId;
 
   @Column({name: 'user_id', length: 64})
-  userId: UserId;
+  userId: string;
 
   @Column({name: 'token', length: 128})
   token: string;
@@ -23,7 +16,7 @@ export class UserTokenEntity implements IUserToken {
   @Column({name: 'refresh_token', length: 128})
   refreshToken: string;
 
-  @Column({name: 'provider', length: 16, nullable: true})
+  @Column({name: 'provider', type: 'enum', enum: AuthProviderEnum, nullable: true})
   provider: AuthProviderEnum;
 
   @Column({name: 'provider_id', length: 16, nullable: true})

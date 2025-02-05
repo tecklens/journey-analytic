@@ -13,15 +13,6 @@
       "path": "./apps/admin"
     },
     {
-      "path": "./libs/stateless"
-    },
-    {
-      "path": "./libs/shared"
-    },
-    {
-      "path": "./libs/shared"
-    },
-    {
       "path": "./libs/shared"
     }
   ]
