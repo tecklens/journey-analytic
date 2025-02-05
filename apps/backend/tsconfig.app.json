@@ -2,22 +2,17 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "out-tsc/backend",
-    "module": "nodenext",
-    "types": [
-      "node"
-    ],
+    "module": "esnext",
+    "types": ["node"],
     "rootDir": "src",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "bundler",
     "tsBuildInfoFile": "out-tsc/backend/tsconfig.app.tsbuildinfo",
-    "emitDecoratorMetadata": true,
+    "emitDecoratorMetadata": false,
     "target": "es2021",
     "experimentalDecorators": true,
     "strictPropertyInitialization": false
   },
-  "include": [
-    "src/**/*.ts",
-    "src/assets/**/*"
-  ],
+  "include": ["src/**/*.ts", "src/assets/**/*"],
   "exclude": [
     "out-tsc",
     "dist",
@@ -27,5 +22,10 @@
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../libs/stateless/tsconfig.lib.json"
+    }
   ]
 }

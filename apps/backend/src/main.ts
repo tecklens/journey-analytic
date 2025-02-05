@@ -31,16 +31,7 @@ const corsOptionsDelegate = function (req: any, callback: any) {
     corsOptions.origin = [
       process.env.FRONT_BASE_URL ?? '',
       process.env.API_ROOT_URL ?? '',
-      'https://dpm-frontend.pages.dev/',
-      'http://localhost:3000',
-      'http://localhost:5173',
-      'http://192.168.1.51:5173',
-      'http://192.168.1.102:5173',
-      'https://accounts.google.com',
-      'https://dpm.io.vn',
-      'https://dhn.io.vn',
-      'https://admin.dhn.io.vn',
-      'https://donghangnhanh.vn',
+      'http://localhost:4200',
     ];
     if (process.env.WIDGET_BASE_URL && Array.isArray(corsOptions.origin)) {
       corsOptions.origin.push(process.env.WIDGET_BASE_URL);

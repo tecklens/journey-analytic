@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from "nestjs-cassandra";
-import {ChannelEntity, ChannelRepository} from "../../repositories/channel";
+import {ChannelEntity, ChannelRepository} from "../../repositories/scylla/channel";
 import {Observable} from "rxjs";
 import {SnowflakeIdService} from "@street-devs/nest-snowflake-id";
 

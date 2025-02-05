@@ -4,7 +4,7 @@
     "outDir": "out-tsc/admin",
     "tsBuildInfoFile": "out-tsc/admin/tsconfig.app.tsbuildinfo",
     "target": "ES2022",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "dom"],
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "types": [

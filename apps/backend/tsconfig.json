@@ -4,6 +4,9 @@
   "include": [],
   "references": [
     {
+      "path": "../../libs/stateless"
+    },
+    {
       "path": "./tsconfig.app.json"
     },
     {

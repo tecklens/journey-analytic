@@ -33,7 +33,7 @@
     "baseUrl": ".",
     "rootDir": ".",
     "paths": {
-      "@admin/*": ["./apps/admin/src/*"],
+      "@admin/*": ["./apps/admin/src/*"]
     }
   }
 }
