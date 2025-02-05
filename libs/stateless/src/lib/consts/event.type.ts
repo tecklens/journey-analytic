@@ -1,0 +1,7 @@
+export enum EventType {
+  page_view = 1,
+  custom_event = 2,
+  session_start = 3,
+  session_end = 4,
+  first_visit = 5,
+}

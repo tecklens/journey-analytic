@@ -1,0 +1,53 @@
+{
+  "name": "@journey-analysis/backend",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "name": "backend",
+    "projectType": "application",
+    "sourceRoot": "apps/backend/src",
+    "targets": {
+      "build": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "webpack-cli build",
+          "args": [
+            "node-env=production"
+          ]
+        },
+        "configurations": {
+          "development": {
+            "args": [
+              "node-env=development"
+            ]
+          }
+        }
+      },
+      "serve": {
+        "executor": "@nx/js:node",
+        "defaultConfiguration": "development",
+        "dependsOn": [
+          "build"
+        ],
+        "options": {
+          "buildTarget": "backend:build",
+          "watch": true,
+          "runBuildTargetDependencies": true
+        },
+        "configurations": {
+          "development": {
+            "buildTarget": "backend:build:development"
+          },
+          "production": {
+            "buildTarget": "backend:build:production"
+          }
+        }
+      },
+      "test": {
+        "options": {
+          "passWithNoTests": true
+        }
+      }
+    }
+  }
+}
