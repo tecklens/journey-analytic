@@ -70,7 +70,6 @@ export class AuthController {
     }
 
     @Post('/register')
-    @UseGuards(JwtAuthGuard)
     @Header('Cache-Control', 'no-store')
     async userRegistration(
         @UserSession() user: IJwtPayload,
@@ -98,15 +97,15 @@ export class AuthController {
         return await this.authService.login(body, fp);
     }
 
-    @Post('/store/:storeId/switch')
+    @Post('/project/:projectId/switch')
     @UseGuards(JwtAuthGuard)
     async storeSwitch(
         @UserSession() user: IJwtPayload,
-        @Param('storeId') storeId: string,
+        @Param('projectId') projectId: string,
     ): Promise<{ token: string; refreshToken: string }> {
-        return await this.authService.switchStore({
+        return await this.authService.switchProject({
             userId: user.id,
-            newStoreId: storeId,
+            newProjectId: projectId,
         });
     }
 }

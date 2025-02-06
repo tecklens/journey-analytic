@@ -3,17 +3,17 @@ import { UserId, UserRateLimitId, UserStatus, UserTokenId } from "../../types/in
 import { AuthProviderEnum } from "./user.enums.js";
 export interface IUser {
     id: string;
-    firstName?: string | null;
-    lastName?: string | null;
-    email?: string | null;
-    username?: string | null;
-    profilePicture?: string | null;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    email?: string | undefined;
+    username?: string | undefined;
+    profilePicture?: string | undefined;
     showOnBoarding?: boolean;
     showOnBoardingTour?: number;
     jobTitle?: string;
     externalId?: string;
-    bio?: string | null;
-    urls?: string[] | null;
+    bio?: string | undefined;
+    urls?: string[] | undefined;
     status: UserStatus;
     currentProjectId?: string;
     plan: UserPlan;

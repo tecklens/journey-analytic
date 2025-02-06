@@ -1,17 +1,11 @@
-import { Outlet } from '@tanstack/react-router'
-import {
-  IconBrowserCheck,
-  IconNotification,
-  IconPalette,
-  IconTool,
-  IconUser,
-} from '@tabler/icons-react'
-import { Separator } from '@admin/components/ui/separator'
-import { Header } from '@admin/components/layout/header'
-import { Main } from '@admin/components/layout/main'
-import { ProfileDropdown } from '@admin/components/profile-dropdown'
-import { Search } from '@admin/components/search'
-import { ThemeSwitch } from '@admin/components/theme-switch'
+import {Outlet} from '@tanstack/react-router'
+import {IconBrowserCheck, IconNotification, IconPlayerRecord, IconTool, IconUser,} from '@tabler/icons-react'
+import {Separator} from '@admin/components/ui/separator'
+import {Header} from '@admin/components/layout/header'
+import {Main} from '@admin/components/layout/main'
+import {ProfileDropdown} from '@admin/components/profile-dropdown'
+import {Search} from '@admin/components/search'
+import {ThemeSwitch} from '@admin/components/theme-switch'
 import SidebarNav from './components/sidebar-nav'
 
 export default function Settings() {
@@ -61,11 +55,6 @@ const sidebarNavItems = [
     href: '/settings/account',
   },
   {
-    title: 'Appearance',
-    icon: <IconPalette size={18} />,
-    href: '/settings/appearance',
-  },
-  {
     title: 'Notifications',
     icon: <IconNotification size={18} />,
     href: '/settings/notifications',
@@ -74,5 +63,9 @@ const sidebarNavItems = [
     title: 'Display',
     icon: <IconBrowserCheck size={18} />,
     href: '/settings/display',
+  },{
+    title: 'Replay Setting',
+    icon: <IconPlayerRecord size={18} />,
+    href: '/settings/replay',
   },
 ]

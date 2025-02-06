@@ -16,11 +16,11 @@ export class MemberRepository extends Repository<MemberEntity> {
   }
 
   async findMemberByUserId(
-    storeId: string,
+    projectId: string,
     userId: string,
   ): Promise<MemberEntity | null> {
     const member = await this.findOneBy({
-      storeId: storeId,
+      projectId: projectId,
       userId: userId,
     });
 
@@ -29,41 +29,32 @@ export class MemberRepository extends Repository<MemberEntity> {
     return member;
   }
 
-  async findMemberInStore(
-    storeId: string,
+  async findMemberInProject(
+    projectId: string,
     userId: string,
   ): Promise<[MemberEntity[], number]> {
     return await this.findAndCount({
       where: {
-        storeId: storeId,
+        projectId: projectId,
         userId: userId,
       },
       relations: ['user'],
     });
   }
 
-  async findAllMemberInStore(
-    storeId: string,
+  async findAllMemberInProject(
+    projectId: string,
   ): Promise<[MemberEntity[], number]> {
     return await this.findAndCount({
       where: {
-        storeId: storeId,
-      },
-      relations: ['user'],
-    });
-  }
-
-  async findAllMemberInStore2(storeId: string) {
-    return await this.find({
-      where: {
-        storeId: storeId,
+        projectId: projectId,
       },
       relations: ['user'],
     });
   }
 
   async addMember(
-    storeId: string,
+    projectId: string,
     member: IAddMemberData,
     isDefault: boolean,
   ): Promise<MemberEntity> {
@@ -71,7 +62,7 @@ export class MemberRepository extends Repository<MemberEntity> {
       userId: member.userId,
       roles: member.roles,
       status: member.memberStatus,
-      storeId: storeId,
+      projectId: projectId,
       isDefault,
     });
   }
@@ -85,9 +76,9 @@ export class MemberRepository extends Repository<MemberEntity> {
     return await this.findBy(requestQuery);
   }
 
-  async isMemberOfStore(storeId: string, userId: string): Promise<boolean> {
+  async isMemberOfStore(projectId: string, userId: string): Promise<boolean> {
     return this.existsBy({
-      storeId: storeId,
+      projectId: projectId,
       userId: userId,
     });
   }

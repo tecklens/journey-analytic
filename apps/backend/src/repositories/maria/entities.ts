@@ -1,6 +1,6 @@
 import {UserActivityEntity, UserEntity, UserLogEntity, UserTokenEntity} from "./user";
 import {ProjectEntity} from "./project";
-import {SessionEntity} from "./session";
+import {SessionEntity, SessionReplaySettingEntity} from "./session";
 import {WebsiteEntity} from "./website";
 import {MemberEntity} from "./member";
 
@@ -11,6 +11,7 @@ export const entities = [
   UserActivityEntity,
   ProjectEntity,
   SessionEntity,
+  SessionReplaySettingEntity,
   WebsiteEntity,
   MemberEntity
 ]

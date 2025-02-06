@@ -43,6 +43,9 @@ const AuthenticatedTasksIndexLazyImport = createFileRoute(
 const AuthenticatedSettingsIndexLazyImport = createFileRoute(
   '/_authenticated/settings/',
 )()
+const AuthenticatedMembersIndexLazyImport = createFileRoute(
+  '/_authenticated/members/',
+)()
 const AuthenticatedHelpCenterIndexLazyImport = createFileRoute(
   '/_authenticated/help-center/',
 )()
@@ -51,6 +54,9 @@ const AuthenticatedChatsIndexLazyImport = createFileRoute(
 )()
 const AuthenticatedAppsIndexLazyImport = createFileRoute(
   '/_authenticated/apps/',
+)()
+const AuthenticatedSettingsReplayLazyImport = createFileRoute(
+  '/_authenticated/settings/replay',
 )()
 const AuthenticatedSettingsNotificationsLazyImport = createFileRoute(
   '/_authenticated/settings/notifications',
@@ -198,6 +204,15 @@ const AuthenticatedSettingsIndexLazyRoute =
     import('./routes/_authenticated/settings/index.lazy').then((d) => d.Route),
   )
 
+const AuthenticatedMembersIndexLazyRoute =
+  AuthenticatedMembersIndexLazyImport.update({
+    id: '/members/',
+    path: '/members/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/members/index.lazy').then((d) => d.Route),
+  )
+
 const AuthenticatedHelpCenterIndexLazyRoute =
   AuthenticatedHelpCenterIndexLazyImport.update({
     id: '/help-center/',
@@ -227,6 +242,15 @@ const AuthenticatedAppsIndexLazyRoute = AuthenticatedAppsIndexLazyImport.update(
 ).lazy(() =>
   import('./routes/_authenticated/apps/index.lazy').then((d) => d.Route),
 )
+
+const AuthenticatedSettingsReplayLazyRoute =
+  AuthenticatedSettingsReplayLazyImport.update({
+    id: '/replay',
+    path: '/replay',
+    getParentRoute: () => AuthenticatedSettingsRouteLazyRoute,
+  } as any).lazy(() =>
+    import('./routes/_authenticated/settings/replay.lazy').then((d) => d.Route),
+  )
 
 const AuthenticatedSettingsNotificationsLazyRoute =
   AuthenticatedSettingsNotificationsLazyImport.update({
@@ -402,6 +426,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsNotificationsLazyImport
       parentRoute: typeof AuthenticatedSettingsRouteLazyImport
     }
+    '/_authenticated/settings/replay': {
+      id: '/_authenticated/settings/replay'
+      path: '/replay'
+      fullPath: '/settings/replay'
+      preLoaderRoute: typeof AuthenticatedSettingsReplayLazyImport
+      parentRoute: typeof AuthenticatedSettingsRouteLazyImport
+    }
     '/_authenticated/apps/': {
       id: '/_authenticated/apps/'
       path: '/apps'
@@ -421,6 +452,13 @@ declare module '@tanstack/react-router' {
       path: '/help-center'
       fullPath: '/help-center'
       preLoaderRoute: typeof AuthenticatedHelpCenterIndexLazyImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/members/': {
+      id: '/_authenticated/members/'
+      path: '/members'
+      fullPath: '/members'
+      preLoaderRoute: typeof AuthenticatedMembersIndexLazyImport
       parentRoute: typeof AuthenticatedRouteImport
     }
     '/_authenticated/settings/': {
@@ -454,6 +492,7 @@ interface AuthenticatedSettingsRouteLazyRouteChildren {
   AuthenticatedSettingsAppearanceLazyRoute: typeof AuthenticatedSettingsAppearanceLazyRoute
   AuthenticatedSettingsDisplayLazyRoute: typeof AuthenticatedSettingsDisplayLazyRoute
   AuthenticatedSettingsNotificationsLazyRoute: typeof AuthenticatedSettingsNotificationsLazyRoute
+  AuthenticatedSettingsReplayLazyRoute: typeof AuthenticatedSettingsReplayLazyRoute
   AuthenticatedSettingsIndexLazyRoute: typeof AuthenticatedSettingsIndexLazyRoute
 }
 
@@ -467,6 +506,7 @@ const AuthenticatedSettingsRouteLazyRouteChildren: AuthenticatedSettingsRouteLaz
       AuthenticatedSettingsDisplayLazyRoute,
     AuthenticatedSettingsNotificationsLazyRoute:
       AuthenticatedSettingsNotificationsLazyRoute,
+    AuthenticatedSettingsReplayLazyRoute: AuthenticatedSettingsReplayLazyRoute,
     AuthenticatedSettingsIndexLazyRoute: AuthenticatedSettingsIndexLazyRoute,
   }
 
@@ -481,6 +521,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAppsIndexLazyRoute: typeof AuthenticatedAppsIndexLazyRoute
   AuthenticatedChatsIndexLazyRoute: typeof AuthenticatedChatsIndexLazyRoute
   AuthenticatedHelpCenterIndexLazyRoute: typeof AuthenticatedHelpCenterIndexLazyRoute
+  AuthenticatedMembersIndexLazyRoute: typeof AuthenticatedMembersIndexLazyRoute
   AuthenticatedTasksIndexLazyRoute: typeof AuthenticatedTasksIndexLazyRoute
   AuthenticatedUsersIndexLazyRoute: typeof AuthenticatedUsersIndexLazyRoute
 }
@@ -492,6 +533,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAppsIndexLazyRoute: AuthenticatedAppsIndexLazyRoute,
   AuthenticatedChatsIndexLazyRoute: AuthenticatedChatsIndexLazyRoute,
   AuthenticatedHelpCenterIndexLazyRoute: AuthenticatedHelpCenterIndexLazyRoute,
+  AuthenticatedMembersIndexLazyRoute: AuthenticatedMembersIndexLazyRoute,
   AuthenticatedTasksIndexLazyRoute: AuthenticatedTasksIndexLazyRoute,
   AuthenticatedUsersIndexLazyRoute: AuthenticatedUsersIndexLazyRoute,
 }
@@ -517,9 +559,11 @@ export interface FileRoutesByFullPath {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/settings/replay': typeof AuthenticatedSettingsReplayLazyRoute
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/members': typeof AuthenticatedMembersIndexLazyRoute
   '/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
@@ -541,9 +585,11 @@ export interface FileRoutesByTo {
   '/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/settings/replay': typeof AuthenticatedSettingsReplayLazyRoute
   '/apps': typeof AuthenticatedAppsIndexLazyRoute
   '/chats': typeof AuthenticatedChatsIndexLazyRoute
   '/help-center': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/members': typeof AuthenticatedMembersIndexLazyRoute
   '/settings': typeof AuthenticatedSettingsIndexLazyRoute
   '/tasks': typeof AuthenticatedTasksIndexLazyRoute
   '/users': typeof AuthenticatedUsersIndexLazyRoute
@@ -569,9 +615,11 @@ export interface FileRoutesById {
   '/_authenticated/settings/appearance': typeof AuthenticatedSettingsAppearanceLazyRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayLazyRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsLazyRoute
+  '/_authenticated/settings/replay': typeof AuthenticatedSettingsReplayLazyRoute
   '/_authenticated/apps/': typeof AuthenticatedAppsIndexLazyRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexLazyRoute
   '/_authenticated/help-center/': typeof AuthenticatedHelpCenterIndexLazyRoute
+  '/_authenticated/members/': typeof AuthenticatedMembersIndexLazyRoute
   '/_authenticated/settings/': typeof AuthenticatedSettingsIndexLazyRoute
   '/_authenticated/tasks/': typeof AuthenticatedTasksIndexLazyRoute
   '/_authenticated/users/': typeof AuthenticatedUsersIndexLazyRoute
@@ -597,9 +645,11 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/settings/replay'
     | '/apps'
     | '/chats'
     | '/help-center'
+    | '/members'
     | '/settings/'
     | '/tasks'
     | '/users'
@@ -620,9 +670,11 @@ export interface FileRouteTypes {
     | '/settings/appearance'
     | '/settings/display'
     | '/settings/notifications'
+    | '/settings/replay'
     | '/apps'
     | '/chats'
     | '/help-center'
+    | '/members'
     | '/settings'
     | '/tasks'
     | '/users'
@@ -646,9 +698,11 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/appearance'
     | '/_authenticated/settings/display'
     | '/_authenticated/settings/notifications'
+    | '/_authenticated/settings/replay'
     | '/_authenticated/apps/'
     | '/_authenticated/chats/'
     | '/_authenticated/help-center/'
+    | '/_authenticated/members/'
     | '/_authenticated/settings/'
     | '/_authenticated/tasks/'
     | '/_authenticated/users/'
@@ -717,6 +771,7 @@ export const routeTree = rootRoute
         "/_authenticated/apps/",
         "/_authenticated/chats/",
         "/_authenticated/help-center/",
+        "/_authenticated/members/",
         "/_authenticated/tasks/",
         "/_authenticated/users/"
       ]
@@ -738,6 +793,7 @@ export const routeTree = rootRoute
         "/_authenticated/settings/appearance",
         "/_authenticated/settings/display",
         "/_authenticated/settings/notifications",
+        "/_authenticated/settings/replay",
         "/_authenticated/settings/"
       ]
     },
@@ -785,6 +841,10 @@ export const routeTree = rootRoute
       "filePath": "_authenticated/settings/notifications.lazy.tsx",
       "parent": "/_authenticated/settings"
     },
+    "/_authenticated/settings/replay": {
+      "filePath": "_authenticated/settings/replay.lazy.tsx",
+      "parent": "/_authenticated/settings"
+    },
     "/_authenticated/apps/": {
       "filePath": "_authenticated/apps/index.lazy.tsx",
       "parent": "/_authenticated"
@@ -795,6 +855,10 @@ export const routeTree = rootRoute
     },
     "/_authenticated/help-center/": {
       "filePath": "_authenticated/help-center/index.lazy.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/members/": {
+      "filePath": "_authenticated/members/index.lazy.tsx",
       "parent": "/_authenticated"
     },
     "/_authenticated/settings/": {

@@ -69,13 +69,13 @@ export class UserRepository extends Repository<UserEntity> {
     return createHash('sha256').update(token).digest('hex');
   }
 
-  async updateCurrentStore(userId: UserId, storeId: string) {
+  async updateCurrentProject(userId: UserId, projectId: string) {
     return this.update(
       {
         id: userId,
       },
       {
-        currentProjectId: storeId,
+        currentProjectId: projectId,
       },
     );
   }

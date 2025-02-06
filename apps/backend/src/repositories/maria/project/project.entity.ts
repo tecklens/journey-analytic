@@ -1,5 +1,15 @@
-import {Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn, UpdateDateColumn,} from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import {IProject} from "@journey-analytic/shared";
+import {UserEntity} from "../user";
 
 @Entity('project')
 export class ProjectEntity implements IProject {
@@ -10,7 +20,7 @@ export class ProjectEntity implements IProject {
   name: string;
 
   @Index()
-  @Column({ name: 'website', length: 256 })
+  @Column({ name: 'website', length: 256, nullable: true })
   website: string;
 
   @Column({ name: 'tags', type: 'simple-array', nullable: true })
@@ -27,4 +37,8 @@ export class ProjectEntity implements IProject {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+
+  @ManyToOne(() => UserEntity)
+  @JoinColumn([{ name: 'createdBy', referencedColumnName: 'id' }])
+  user: UserEntity;
 }

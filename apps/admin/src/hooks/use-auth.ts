@@ -1,10 +1,10 @@
-import { useQueryClient } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import {useQueryClient} from '@tanstack/react-query'
+import {useEffect} from 'react'
 
-import { authQueryOptions, useAuthQuery } from '~/api/auth-query'
-import { useSignOutMutation } from '@admin/api/sign-out-mutation'
-import { router } from '@admin/lib/router'
-import type { ResAuth } from '@admin/types/response'
+import {authQueryOptions, useAuthQuery} from '@admin/api/auth-query'
+import {useSignOutMutation} from '@admin/api/sign-out-mutation'
+import {router} from '@admin/lib/router'
+import type {ResAuth} from '@admin/types/response'
 
 type AuthState =
   | { user: null; status: 'PENDING' }
@@ -56,7 +56,7 @@ function useAuth(): AuthData {
       return { ...utils, user: null, status: 'UNAUTHENTICATED' }
 
     default:
-      return { ...utils, user: authQuery.data.user, status: 'AUTHENTICATED' }
+      return { ...utils, user: authQuery.data, status: 'AUTHENTICATED' }
   }
 }
 

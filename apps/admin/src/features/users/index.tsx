@@ -28,9 +28,9 @@ export default function Users() {
       <Main>
         <div className='mb-2 flex items-center justify-between space-y-2 flex-wrap'>
           <div>
-            <h2 className='text-2xl font-bold tracking-tight'>User List</h2>
+            <h2 className='text-2xl font-bold tracking-tight'>List Customers</h2>
             <p className='text-muted-foreground'>
-              Manage your users and their roles here.
+              A catalog of your product's end users, lists of users who have something in common to use in analytics.
             </p>
           </div>
           <UsersPrimaryButtons />

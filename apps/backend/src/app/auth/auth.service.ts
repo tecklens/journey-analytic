@@ -1,12 +1,4 @@
-import {
-  ConflictException,
-  ForbiddenException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import {ConflictException, Inject, Injectable, Logger, NotFoundException, UnauthorizedException,} from '@nestjs/common';
 import {
   ActivityType,
   AuthProviderEnum,
@@ -18,6 +10,7 @@ import {
   UserId,
   UserPlan,
   UserStatus,
+  UserInfoDto,
 } from '@journey-analytic/shared';
 import {differenceInHours, differenceInMinutes, differenceInSeconds, isBefore, parseISO, subDays,} from 'date-fns';
 import {
@@ -26,10 +19,11 @@ import {
   ProjectEntity,
   ProjectRepository,
   UserActivityRepository,
+  UserEntity,
   UserRepository,
 } from '../../repositories/maria';
 import {JwtService} from '@nestjs/jwt';
-import {CreateStoreDto, LoginBodyDto, PasswordResetBodyDto, UserRegistrationBodyDto,} from './dtos';
+import {LoginBodyDto, PasswordResetBodyDto, UserRegistrationBodyDto,} from './dtos';
 import * as bcrypt from 'bcrypt';
 import {Cache, CACHE_MANAGER, CacheKey} from '@nestjs/cache-manager';
 import * as process from 'process';
@@ -37,7 +31,7 @@ import {Transactional} from 'typeorm-transactional';
 import {IFingerprint} from 'nestjs-fingerprint';
 import {InjectQueue} from '@nestjs/bullmq';
 import {Queue} from 'bullmq';
-import {ApiException, MailPayload, makeid, normalizeEmail, buildUserKey} from "../../types";
+import {ApiException, buildUserKey, MailPayload, makeid, normalizeEmail} from "../../types";
 
 @Injectable()
 export class AuthService {
@@ -87,7 +81,7 @@ export class AuthService {
   ): Promise<{ newUser: boolean; token: string; refreshToken: string }> {
     const {name, emails, photos} = profile;
     const email = normalizeEmail(emails[0].value);
-    let user: IUser = await this.userRepository.findByEmail(email);
+    let user: UserEntity | null = await this.userRepository.findByEmail(email);
     let newUser = false;
 
     if (!user) {
@@ -113,10 +107,9 @@ export class AuthService {
         ],
       });
 
-      await this.createStore({
+      await this.createProject({
         userId: user.id,
         name: email,
-        field: '',
       });
 
       newUser = true;
@@ -160,7 +153,7 @@ export class AuthService {
     type?: ActivityType;
   }): Promise<{ token: string; refreshToken: string }> {
     const members = await this.memberRepository.findUserActiveMembers(user.id);
-    const projects = await this.projectRepository.findUserActiveStores(
+    const projects = await this.projectRepository.findUserActiveProjects(
       members.map((e) => e.projectId),
     );
 
@@ -176,6 +169,8 @@ export class AuthService {
     if (!project) project = projects[0];
 
     const member = members.find((e) => e.projectId === project.id);
+
+    if (!member) throw new NotFoundException('You are not a member of this project');
 
     try {
       await this.userActivityRepository.save({
@@ -296,10 +291,7 @@ export class AuthService {
     body: UserRegistrationBodyDto,
     fp: IFingerprint,
   ) {
-    if (!u.roles?.includes('superuser') && !u.roles?.includes('admin')) {
-      throw new ForbiddenException();
-    }
-    if (process.env.DISABLE_USER_REGISTRATION === 'true')
+    if (process.env.DISABLE_USER_REGISTRATION == 'true')
       throw new ApiException('Account creation is disabled');
 
     const email = normalizeEmail(body.email);
@@ -319,10 +311,10 @@ export class AuthService {
       status: UserStatus.ACTIVE,
     });
 
-    const {project} = await this.createStore({
+    const {project} = await this.createProject({
       userId: user.id,
       name: body.projectName,
-      field: body.field,
+      createdBy: user.id,
     });
 
     try {
@@ -348,14 +340,9 @@ export class AuthService {
     };
   }
 
-  private async createStore(body: CreateStoreDto, roles?: string[]) {
-    const defaultRoles = [...(roles ?? []), ROLES.owner];
-    const project = await this.projectRepository.save({
-      owner: body.userId,
-      name: body.name,
-      field: body.field,
-      plan: UserPlan.free,
-    });
+  private async createProject(body: any) {
+    const defaultRoles = [ROLES.superuser];
+    const project = await this.projectRepository.save(body);
 
     const member = await this.addMember({
       projectId: project.id,
@@ -397,10 +384,10 @@ export class AuthService {
 
   private async isMember(
     userId: string,
-    organizationId: string,
+    projectId: string,
   ): Promise<boolean> {
     return !!(await this.memberRepository.findMemberByUserId(
-      organizationId,
+      projectId,
       userId,
     ));
   }
@@ -421,7 +408,7 @@ export class AuthService {
 
       await this.cacheManager.del(
         buildUserKey({
-          id: foundUser.id,
+          _id: foundUser.id,
         }),
       );
 
@@ -473,7 +460,7 @@ export class AuthService {
 
     await this.cacheManager.del(
       buildUserKey({
-        id: user.id,
+        _id: user.id,
       }),
     );
 
@@ -557,6 +544,7 @@ export class AuthService {
 
     return {
       ...(await this.generateUserToken({user, fp})),
+      user: UserInfoDto.fromEntity(user, []),
     };
   }
 
@@ -569,7 +557,7 @@ export class AuthService {
   }
 
   private async updateUserUsername(
-    user: IUser,
+    user: UserEntity,
     profile: {
       name: string;
       login: string;
@@ -578,7 +566,7 @@ export class AuthService {
       id: string;
     },
     authProvider: AuthProviderEnum,
-  ): Promise<IUser> {
+  ): Promise<UserEntity> {
     const withoutUsername = user.tokens?.find(
       (token) =>
         token.provider === authProvider &&
@@ -596,10 +584,12 @@ export class AuthService {
         },
       );
 
-      user = await this.userRepository.findOneBy({
+      const newUser = await this.userRepository.findOneBy({
         id: user.id,
       });
-      if (!user) throw new ApiException('User not found');
+      if (!newUser) throw new ApiException('User not found');
+
+      return newUser;
     }
 
     return user;
@@ -614,6 +604,7 @@ export class AuthService {
         error: '',
       };
     }
+    // @ts-ignore
     const formattedDate = parseISO(lastResetAttempt);
     const diffSeconds = differenceInSeconds(new Date(), formattedDate);
     const diffHours = differenceInHours(new Date(), formattedDate);
@@ -661,6 +652,7 @@ export class AuthService {
   private getUpdatedRequestCount(user: IUser): IUserResetTokenCount {
     const now = new Date().toISOString();
     const lastResetAttempt = user.resetTokenDate ?? now;
+    // @ts-ignore
     const formattedDate = parseISO(lastResetAttempt);
     const diffSeconds = differenceInSeconds(new Date(), formattedDate);
     const diffHours = differenceInHours(new Date(), formattedDate);
@@ -731,36 +723,36 @@ export class AuthService {
     );
   }
 
-  private async getUsersMembersStoreIds(
+  private async getUsersMembersProjectIds(
     userId: string,
   ): Promise<MemberEntity[]> {
     return await this.memberRepository.findUserActiveMembers(userId);
   }
 
-  async switchStore({
-                      newStoreId,
+  async switchProject({
+                      newProjectId,
                       userId,
                     }: {
-    newStoreId: string;
+    newProjectId: string;
     userId: string;
   }) {
     const isAuthenticated = await this.isAuthenticatedForStore(
       userId,
-      newStoreId,
+      newProjectId,
     );
     if (!isAuthenticated) {
       throw new UnauthorizedException(
-        `Not authorized for organization ${newStoreId}`,
+        `Not authorized for organization ${newProjectId}`,
       );
     }
 
-    const project = await this.projectRepository.findByIdWithOwner(newStoreId);
+    const project = await this.projectRepository.findByIdWithOwner(newProjectId);
     if (!project) {
       throw new NotFoundException('Store not exist');
     }
 
     const member = await this.memberRepository.findMemberByUserId(
-      newStoreId,
+      newProjectId,
       userId,
     );
     if (!member) throw new ApiException('Member not found');
@@ -768,12 +760,11 @@ export class AuthService {
     const user = await this.userRepository.findById(userId);
     if (!user) throw new ApiException(`User ${userId} not found`);
 
-    await this.userRepository.updateCurrentStore(user.id, newStoreId);
+    await this.userRepository.updateCurrentProject(user.id, newProjectId);
 
     return await this.getSignedToken(
       user,
-      newStoreId,
-      project.owner,
+      newProjectId,
       member,
     );
   }
@@ -782,6 +773,6 @@ export class AuthService {
     userId: string,
     projectId: string,
   ): Promise<boolean> {
-    return !!(await this.memberRepository.isMemberOfStore(projectId, userId));
+    return (await this.memberRepository.isMemberOfStore(projectId, userId));
   }
 }

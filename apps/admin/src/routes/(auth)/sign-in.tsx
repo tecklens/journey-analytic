@@ -7,7 +7,7 @@ export const Route = createFileRoute('/(auth)/sign-in')({
     redirect: z.string().optional().catch(''),
   }),
   beforeLoad: ({ context, search }) => {
-    if (context.auth.status === 'AUTHENTICATED') {
+    if (context.auth?.status === 'AUTHENTICATED') {
       throw redirect({
         to: search.redirect || '/',
       })

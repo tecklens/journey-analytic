@@ -11,6 +11,7 @@ export class GoogleStrategy extends PassportStrategy(
   PassportStrategyEnum.GOOGLE,
 ) {
   constructor(private authService: AuthService) {
+    // @ts-ignore
     super({
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,

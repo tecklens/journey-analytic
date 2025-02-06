@@ -25,7 +25,7 @@ export class UserRegistrationBodyDto {
   @Matches(passwordConstraints.pattern, {
     message:
       // eslint-disable-next-line max-len
-      'The password must contain minimum 8 and maximum 64 characters, at least one uppercase letter, one lowercase letter, one number and one special character #?!@$%^&*()-',
+      'The password must contain minimum 4 and maximum 64 characters, at least one uppercase letter, one lowercase letter, one number and one special character #?!@$%^&*()-',
   })
   password: string;
 
@@ -59,17 +59,4 @@ export class UserRegistrationBodyDto {
   @IsString()
   @IsDefined()
   projectName: string;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  field?: string;
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  key?: string;
-  @ApiPropertyOptional()
-  @IsArray()
-  @IsOptional()
-  roles?: string[];
 }

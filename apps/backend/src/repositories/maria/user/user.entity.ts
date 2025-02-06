@@ -39,10 +39,10 @@ export class UserEntity implements IUser {
   jobTitle: string;
 
   @Column({ name: 'bio', length: 256, nullable: true })
-  bio: string;
+  bio?: string;
 
   @Column({ name: 'urls', type: 'simple-array', nullable: true })
-  urls: string[];
+  urls?: string[];
 
   @Column({ name: 'plan', nullable: true, default: 0 })
   plan: number;
@@ -61,7 +61,7 @@ export class UserEntity implements IUser {
   currentProjectId: string;
 
   @Column({ name: 'change_pass_tx_id', length: 64, nullable: true })
-  changePassTxId: string;
+  changePassTxId?: string;
 
   @Column({
     name: 'owner_org',

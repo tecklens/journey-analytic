@@ -11,6 +11,7 @@ import {ConfigService} from "@nestjs/config";
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import helmet from "helmet";
 import {urlencoded} from 'express';
+import { initializeTransactionalContext } from 'typeorm-transactional';
 
 const corsOptionsDelegate = function (req: any, callback: any) {
   const corsOptions = {
@@ -41,6 +42,7 @@ const corsOptionsDelegate = function (req: any, callback: any) {
 };
 
 async function bootstrap() {
+  initializeTransactionalContext();
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get<any>(ConfigService);
@@ -57,6 +59,7 @@ async function bootstrap() {
       .addTag('User')
       .addTag('Channel')
       .addTag('Event')
+      .addTag('Project')
       .addBearerAuth()
       .build();
   const document = SwaggerModule.createDocument(app, config);

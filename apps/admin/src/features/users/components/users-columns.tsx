@@ -1,44 +1,11 @@
-import { ColumnDef } from '@tanstack/react-table'
-import { cn } from '@admin/lib/utils'
-import { Badge } from '@admin/components/ui/badge'
-import { Checkbox } from '@admin/components/ui/checkbox'
+import {ColumnDef} from '@tanstack/react-table'
+import {cn} from '@admin/lib/utils'
 import LongText from '@admin/components/long-text'
-import { callTypes, userTypes } from '../data/data'
-import { User } from '../data/schema'
-import { DataTableColumnHeader } from './data-table-column-header'
-import { DataTableRowActions } from './data-table-row-actions'
+import {User} from '../data/schema'
+import {DataTableColumnHeader} from './data-table-column-header'
+import {DataTableRowActions} from './data-table-row-actions'
 
 export const columns: ColumnDef<User>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
-        className='translate-y-[2px]'
-      />
-    ),
-    meta: {
-      className: cn(
-        'sticky md:table-cell left-0 z-10 rounded-tl',
-        'bg-background transition-colors duration-200 group-hover/row:bg-muted group-data-[state=selected]/row:bg-muted'
-      ),
-    },
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
-        className='translate-y-[2px]'
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
   {
     accessorKey: 'username',
     header: ({ column }) => (
@@ -57,9 +24,9 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    id: 'fullName',
+    id: 'id',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Name' />
+      <DataTableColumnHeader column={column} title='ID' />
     ),
     cell: ({ row }) => {
       const { firstName, lastName } = row.original
@@ -80,60 +47,10 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: 'phoneNumber',
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Phone Number' />
+      <DataTableColumnHeader column={column} title='FIRST SEEN' />
     ),
     cell: ({ row }) => <div>{row.getValue('phoneNumber')}</div>,
     enableSorting: false,
-  },
-  {
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
-    cell: ({ row }) => {
-      const { status } = row.original
-      const badgeColor = callTypes.get(status)
-      return (
-        <div className='flex space-x-2'>
-          <Badge variant='outline' className={cn('capitalize', badgeColor)}>
-            {row.getValue('status')}
-          </Badge>
-        </div>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-    enableHiding: false,
-    enableSorting: false,
-  },
-  {
-    accessorKey: 'role',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Role' />
-    ),
-    cell: ({ row }) => {
-      const { role } = row.original
-      const userType = userTypes.find(({ value }) => value === role)
-
-      if (!userType) {
-        return null
-      }
-
-      return (
-        <div className='flex gap-x-2 items-center'>
-          {userType.icon && (
-            <userType.icon size={16} className='text-muted-foreground' />
-          )}
-          <span className='capitalize text-sm'>{row.getValue('role')}</span>
-        </div>
-      )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
-    enableSorting: false,
-    enableHiding: false,
   },
   {
     id: 'actions',

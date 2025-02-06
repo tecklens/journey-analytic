@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import {Link} from '@tanstack/react-router'
 import {
   BadgeCheck,
   Bell,
@@ -7,7 +7,7 @@ import {
   LogOut,
   Sparkles,
 } from 'lucide-react'
-import { Avatar, AvatarFallback, AvatarImage } from '@admin/components/ui/avatar'
+import {Avatar, AvatarFallback, AvatarImage} from '@admin/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,17 +23,13 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@admin/components/ui/sidebar'
+import {useAuth} from "@admin/hooks/use-auth.ts";
+import {getUserName} from "@admin/utils";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string
-    email: string
-    avatar: string
-  }
-}) {
-  const { isMobile } = useSidebar()
+export function NavUser() {
+  const auth = useAuth()
+
+  const {isMobile} = useSidebar()
 
   return (
     <SidebarMenu>
@@ -45,14 +41,14 @@ export function NavUser({
               className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
             >
               <Avatar className='h-8 w-8 rounded-lg'>
-                <AvatarImage src={user.avatar} alt={user.name} />
+                <AvatarImage src={auth.user?.profilePicture} alt={getUserName(auth.user?.firstName, auth.user?.lastName)}/>
                 <AvatarFallback className='rounded-lg'>SN</AvatarFallback>
               </Avatar>
               <div className='grid flex-1 text-left text-sm leading-tight'>
-                <span className='truncate font-semibold'>{user.name}</span>
-                <span className='truncate text-xs'>{user.email}</span>
+                <span className='truncate font-semibold'>{getUserName(auth.user?.firstName, auth.user?.lastName)}</span>
+                <span className='truncate text-xs'>{auth.user?.email}</span>
               </div>
-              <ChevronsUpDown className='ml-auto size-4' />
+              <ChevronsUpDown className='ml-auto size-4'/>
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -64,46 +60,46 @@ export function NavUser({
             <DropdownMenuLabel className='p-0 font-normal'>
               <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                 <Avatar className='h-8 w-8 rounded-lg'>
-                  <AvatarImage src={user.avatar} alt={user.name} />
+                  <AvatarImage src={auth.user?.profilePicture} alt={getUserName(auth.user?.firstName, auth.user?.lastName)}/>
                   <AvatarFallback className='rounded-lg'>SN</AvatarFallback>
                 </Avatar>
                 <div className='grid flex-1 text-left text-sm leading-tight'>
-                  <span className='truncate font-semibold'>{user.name}</span>
-                  <span className='truncate text-xs'>{user.email}</span>
+                  <span className='truncate font-semibold'>{getUserName(auth.user?.firstName, auth.user?.lastName)}</span>
+                  <span className='truncate text-xs'>{auth.user?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator/>
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <Sparkles />
+                <Sparkles/>
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator/>
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <Link to='/settings/account'>
-                  <BadgeCheck />
+                  <BadgeCheck/>
                   Account
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to='/settings'>
-                  <CreditCard />
+                  <CreditCard/>
                   Billing
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link to='/settings/notifications'>
-                  <Bell />
+                  <Bell/>
                   Notifications
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
-            <DropdownMenuSeparator />
+            <DropdownMenuSeparator/>
             <DropdownMenuItem>
-              <LogOut />
+              <LogOut/>
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

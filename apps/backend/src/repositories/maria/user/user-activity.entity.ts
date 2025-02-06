@@ -8,8 +8,8 @@ export class UserActivityEntity {
   @Column({ name: 'user_id', length: 64 })
   userId: string;
 
-  @Column({ name: 'store_id', length: 64 })
-  storeId: string;
+  @Column({ name: 'project_id', length: 64 })
+  projectId: string;
 
   @Column({ name: 'type', length: 128 })
   type: string;

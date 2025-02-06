@@ -1,10 +1,7 @@
-type User = {
-  name: string
-}
-
+import {IUser} from '@journey-analytic/shared'
 export type ResSignIn = {
   accessToken: string
-  user: User
+  user: IUser
 }
 
 export type ResSignOut = {
@@ -16,5 +13,12 @@ export type ResRefresh = {
 }
 
 export type ResAuth = {
-  user: User
+  user: IUser
+}
+
+export interface IResponse<T> {
+  page: number;
+  total: number;
+  pageSize: number;
+  data: T[];
 }

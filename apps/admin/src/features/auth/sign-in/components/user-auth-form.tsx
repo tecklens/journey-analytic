@@ -1,58 +1,31 @@
-import { HTMLAttributes, useState } from 'react'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Link } from '@tanstack/react-router'
-import { IconBrandFacebook, IconBrandGithub } from '@tabler/icons-react'
-import { cn } from '@admin/lib/utils'
-import { Button } from '@admin/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@admin/components/ui/form'
-import { Input } from '@admin/components/ui/input'
-import { PasswordInput } from '@admin/components/password-input'
+import {HTMLAttributes} from 'react'
+import {useForm} from 'react-hook-form'
+import {zodResolver} from '@hookform/resolvers/zod'
+import {Link} from '@tanstack/react-router'
+import {IconBrandFacebook, IconBrandGithub} from '@tabler/icons-react'
+import {cn} from '@admin/lib/utils'
+import {Button} from '@admin/components/ui/button'
+import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from '@admin/components/ui/form'
+import {Input} from '@admin/components/ui/input'
+import {PasswordInput} from '@admin/components/password-input'
+import {SignInFormSchema, SignInFormSchemaType} from "@admin/lib/schema";
+import {useSignInMutation} from "@admin/api/sign-in-mutation.ts";
 
 type UserAuthFormProps = HTMLAttributes<HTMLDivElement>
 
-const formSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'Please enter your email' })
-    .email({ message: 'Invalid email address' }),
-  password: z
-    .string()
-    .min(1, {
-      message: 'Please enter your password',
-    })
-    .min(7, {
-      message: 'Password must be at least 7 characters long',
-    }),
-})
-
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState(false)
+  const signInMutation = useSignInMutation()
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<SignInFormSchemaType>({
+    resolver: zodResolver(SignInFormSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // eslint-disable-next-line no-console
-    console.log(data)
-
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 3000)
+  async function onSubmit(data: SignInFormSchemaType) {
+    await signInMutation.mutateAsync(data)
   }
 
   return (
@@ -94,7 +67,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 </FormItem>
               )}
             />
-            <Button className='mt-2' disabled={isLoading}>
+            <Button className='mt-2' disabled={signInMutation.isPending}>
               Login
             </Button>
 
@@ -114,7 +87,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 variant='outline'
                 className='w-full'
                 type='button'
-                disabled={isLoading}
+                disabled={signInMutation.isPending}
               >
                 <IconBrandGithub className='h-4 w-4' /> GitHub
               </Button>
@@ -122,7 +95,7 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
                 variant='outline'
                 className='w-full'
                 type='button'
-                disabled={isLoading}
+                disabled={signInMutation.isPending}
               >
                 <IconBrandFacebook className='h-4 w-4' /> Facebook
               </Button>
