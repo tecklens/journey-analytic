@@ -2,18 +2,20 @@ import {ConflictException, Inject, Injectable, Logger, NotFoundException, Unauth
 import {
   ActivityType,
   AuthProviderEnum,
+  IApiKeyValid,
   IJwtPayload,
   IUser,
   IUserResetTokenCount,
   MemberStatus,
   ROLES,
   UserId,
+  UserInfoDto,
   UserPlan,
   UserStatus,
-  UserInfoDto,
 } from '@journey-analytic/shared';
 import {differenceInHours, differenceInMinutes, differenceInSeconds, isBefore, parseISO, subDays,} from 'date-fns';
 import {
+  ApiKeyRepository,
   MemberEntity,
   MemberRepository,
   ProjectEntity,
@@ -31,7 +33,10 @@ import {Transactional} from 'typeorm-transactional';
 import {IFingerprint} from 'nestjs-fingerprint';
 import {InjectQueue} from '@nestjs/bullmq';
 import {Queue} from 'bullmq';
-import {ApiException, buildUserKey, MailPayload, makeid, normalizeEmail} from "../../types";
+import {ApiException, buildUserKey, MailPayload, makeid, normalizeEmail, encryptApiKey} from "../../types";
+import {createHash} from "crypto";
+import hat from 'hat';
+import {ENCRYPTION_KEY} from "../../consts";
 
 @Injectable()
 export class AuthService {
@@ -49,6 +54,7 @@ export class AuthService {
     private readonly projectRepository: ProjectRepository,
     private readonly memberRepository: MemberRepository,
     private readonly userActivityRepository: UserActivityRepository,
+    private readonly apiKeyRepository: ApiKeyRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     @InjectQueue('send-email') private emailQueue: Queue<MailPayload, any, any>,
   ) {
@@ -344,6 +350,18 @@ export class AuthService {
     const defaultRoles = [ROLES.superuser];
     const project = await this.projectRepository.save(body);
 
+    // tạo api key cho từng project
+    const key = await this.generateUniqueApiKey();
+    const encryptedApiKey = encryptApiKey(key, ENCRYPTION_KEY);
+    const hashedApiKey = createHash('sha256').update(key).digest('hex');
+
+    await this.apiKeyRepository.save({
+      projectId: project.id,
+      hash: hashedApiKey,
+      key: encryptedApiKey,
+      userId: body.userId,
+    })
+
     const member = await this.addMember({
       projectId: project.id,
       userId: body.userId,
@@ -355,6 +373,22 @@ export class AuthService {
       project,
       member,
     };
+  }
+
+  private async generateUniqueApiKey() {
+    let apiKey = '';
+    apiKey = this.generateHatApiKey();
+    return apiKey as string;
+  }
+
+  /**
+   * Extracting the generation functionality so it can be stubbed for functional testing
+   *
+   * @requires hat
+   * @todo Dependency is no longer accessible to source code due of removal from GitHub. Consider look for an alternative.
+   */
+  private generateHatApiKey(): string {
+    return hat();
   }
 
   private async addMember({
@@ -730,9 +764,9 @@ export class AuthService {
   }
 
   async switchProject({
-                      newProjectId,
-                      userId,
-                    }: {
+                        newProjectId,
+                        userId,
+                      }: {
     newProjectId: string;
     userId: string;
   }) {
@@ -774,5 +808,82 @@ export class AuthService {
     projectId: string,
   ): Promise<boolean> {
     return (await this.memberRepository.isMemberOfStore(projectId, userId));
+  }
+
+  public async validateApiKey(apiKey: string): Promise<IJwtPayload> {
+    const {project, user, error} = await this.getApiKeyUser({
+      apiKey,
+    });
+
+    if (error) throw new UnauthorizedException(error);
+
+    // let plan: UserPlan = user.plan;
+    // if (!plan) plan = UserPlan.free;
+    //
+    // const cPoint = consumePoints[plan];
+    // const cPointSecond = consumeSecondPoints[plan];
+    //
+    // try {
+    //   await this.limitService
+    //     .getLimiter()
+    //     .consume(`${user._id}_${environment._id}`, cPoint);
+    //
+    //   await this.limitService
+    //     .getLimiterSecond()
+    //     .consume(`${user._id}_${environment._id}`, cPointSecond);
+
+    return {
+      plan: user.plan,
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      profilePicture: user.profilePicture,
+      projectId: project.id,
+      roles: [],
+      exp: 0,
+    };
+    // } catch (e) {
+    //   throw new UnauthorizedException(
+    //     'Exceeding the bucket limit for your account',
+    //   );
+    // }
+  }
+
+  private async getApiKeyUser({
+                                apiKey,
+                              }: {
+    apiKey: string;
+  }): Promise<IApiKeyValid> {
+    const cachedData = await this.cacheManager.get<IApiKeyValid>(apiKey);
+    if (cachedData) {
+      if (cachedData.project) return cachedData;
+      else {
+        await this.cacheManager.del(apiKey);
+      }
+    }
+    const hashedApiKey = createHash('sha256').update(apiKey).digest('hex');
+
+    const key = await this.apiKeyRepository.findByApiKey({
+      hash: hashedApiKey,
+    });
+
+    if (!key) {
+      // Failed to find the environment for the provided API key.
+      throw new UnauthorizedException('API Key not found');
+    }
+
+    if (!key.project) {
+      throw new UnauthorizedException('API Key not found');
+    }
+
+    const user = await this.userRepository.findById(key.userId);
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const rsp = {project: key.project, user: key.user};
+    await this.cacheManager.set(apiKey, rsp);
+    return rsp;
   }
 }

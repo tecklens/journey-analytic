@@ -1,15 +1,28 @@
 import {ConflictException, ForbiddenException, Injectable} from "@nestjs/common";
-import {ProjectRepository, MemberRepository, MemberEntity, UserRepository} from "../../repositories/maria";
-import {CreateProjectDto, SearchMembersDto} from './dtos'
-import {IJwtPayload, MemberStatus, ROLES} from "@journey-analytic/shared";
-import {ApiException, PaginatedResponseDto} from "../../types";
+import {
+  ApiKeyRepository,
+  MemberEntity,
+  MemberRepository,
+  ProjectRepository, SessionRepository,
+  WebsiteRepository
+} from "../../repositories/maria";
+import {CreateProjectDto, GetWebsiteConfigDto, SearchMembersDto} from './dtos'
+import {IJwtPayload, MemberStatus, ROLES, IApiKey} from "@journey-analytic/shared";
+import {ApiException, decryptApiKey, encryptApiKey, PaginatedResponseDto} from "../../types";
 import {Transactional} from 'typeorm-transactional';
+import {createHash} from "crypto";
+import hat from "hat";
+import {ENCRYPTION_KEY} from "../../consts";
+import {UAParser} from "ua-parser-js";
 
 @Injectable()
 export class ProjectService {
   constructor(
     private readonly projectRepository: ProjectRepository,
     private readonly memberRepository: MemberRepository,
+    private readonly apiKeyRepository: ApiKeyRepository,
+    private readonly websiteRepository: WebsiteRepository,
+    private readonly sessionRepository: SessionRepository,
   ) {}
   async getMembers(
     u: IJwtPayload,
@@ -26,7 +39,7 @@ export class ProjectService {
   }
 
   @Transactional()
-  async createStore(u: IJwtPayload, payload: CreateProjectDto) {
+  async createProject(u: IJwtPayload, payload: CreateProjectDto) {
     if (await this.projectRepository.existsBy({name: payload.name.trim()})) {
       throw new ConflictException('Project name existed');
     }
@@ -37,6 +50,18 @@ export class ProjectService {
       createdBy: u.id,
     })
 
+    // tạo api key cho từng project
+    const key = await this.generateUniqueApiKey();
+    const encryptedApiKey = encryptApiKey(key, ENCRYPTION_KEY);
+    const hashedApiKey = createHash('sha256').update(key).digest('hex');
+
+    await this.apiKeyRepository.save({
+      projectId: newProject.id,
+      hash: hashedApiKey,
+      key: encryptedApiKey,
+      userId: u.id,
+    })
+
     await this.addMember({
       projectId: newProject.id,
       userId: u.id,
@@ -45,6 +70,22 @@ export class ProjectService {
     });
 
     return newProject;
+  }
+
+  private async generateUniqueApiKey() {
+    let apiKey = '';
+    apiKey = this.generateHatApiKey();
+    return apiKey as string;
+  }
+
+  /**
+   * Extracting the generation functionality so it can be stubbed for functional testing
+   *
+   * @requires hat
+   * @todo Dependency is no longer accessible to source code due of removal from GitHub. Consider look for an alternative.
+   */
+  private generateHatApiKey(): string {
+    return hat();
   }
 
   private async addMember({
@@ -124,5 +165,98 @@ export class ProjectService {
     member.status = MemberStatus.ACTIVE;
 
     return this.memberRepository.save(member);
+  }
+
+  async getApiKey(user: IJwtPayload): Promise<IApiKey[]> {
+    const keys = await this.apiKeyRepository.getApiKeys(
+      user.projectId,
+    );
+
+    return keys.map((apiKey: IApiKey) => {
+      return {
+        key: decryptApiKey(apiKey.key, ENCRYPTION_KEY),
+        userId: apiKey.userId,
+        projectId: apiKey.projectId,
+      };
+    });
+  }
+
+  async generateApiKey(user: IJwtPayload): Promise<IApiKey> {
+    const project = await this.projectRepository.findOneBy({
+      id: user.projectId,
+    });
+
+    if (!project) {
+      throw new ApiException(`Project id: ${user.projectId} not found`);
+    }
+
+    const key = await this.generateUniqueApiKey();
+    const encryptedApiKey = encryptApiKey(key, ENCRYPTION_KEY);
+    const hashedApiKey = createHash('sha256').update(key).digest('hex');
+
+    return this.apiKeyRepository.save({
+      projectId: user.projectId,
+      key: encryptedApiKey,
+      userId: user.id,
+      hash: hashedApiKey,
+    });
+  }
+
+  async getWebsites(u: IJwtPayload) {
+    const websites = await this.websiteRepository.findByProjectId(
+      u.projectId
+    )
+    let active = undefined;
+    if (websites?.length > 0) {
+      if (u.websiteId) {
+        active = websites.find(e => e.id === u.websiteId)
+
+        if (!active) active = websites[0]
+      } else {
+        active = websites[0]
+      }
+    }
+
+    const reLogin = active?.id === u.websiteId
+
+    return {
+      active,
+      websites,
+      haveData: websites?.length > 0,
+      reLogin,
+    }
+  }
+
+  async getConfig(u: IJwtPayload, userAgent: string, payload: GetWebsiteConfigDto) {
+    let website = await this.websiteRepository.findByDomain(
+        u.projectId,
+        payload.domain
+    )
+    if (!website) {
+      website = await this.websiteRepository.save({
+        projectId: u.projectId,
+        domain: payload.domain,
+        createdBy: u.id,
+        title: payload.title,
+      })
+    }
+
+    const parser = new UAParser(userAgent);
+    const result = parser.getResult();
+    const newSession = await this.sessionRepository.save({
+      projectId: u.projectId,
+      websiteId: website.id,
+      host: payload.domain,
+      browser: result.browser.name,
+      os: result.os.name,
+      device: result.device.vendor,
+      deviceType: result.device.type,
+      screen: payload.screen,
+      cpu: result.cpu.architecture,
+    })
+
+    return {
+      session: newSession.id,
+    }
   }
 }

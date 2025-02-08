@@ -6,6 +6,7 @@ export interface ISession {
   browser: string;
   os: string;
   device?: string;
+  deviceType?: string;
   screen: string;
   language: string;
   country: string;
@@ -13,6 +14,6 @@ export interface ISession {
   shareId?: string;
   referrer?: string;
 
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

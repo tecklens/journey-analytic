@@ -1,44 +1,29 @@
-import { Link } from '@tanstack/react-router'
-import { IconMenu } from '@tabler/icons-react'
-import { cn } from '@admin/lib/utils'
-import { Button } from '@admin/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@admin/components/ui/dropdown-menu'
+import {IconMenu} from '@tabler/icons-react'
+import {cn} from '@admin/lib/utils'
+import {Button} from '@admin/components/ui/button'
+import {DropdownMenu, DropdownMenuContent, DropdownMenuTrigger,} from '@admin/components/ui/dropdown-menu'
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@admin/components/ui/select.tsx";
+import {useAuth} from "@admin/hooks/use-auth.ts";
+import {useWebsiteQuery} from "@admin/api/project/website-query.ts";
 
 interface TopNavProps extends React.HTMLAttributes<HTMLElement> {
-  links: {
-    title: string
-    href: string
-    isActive: boolean
-    disabled?: boolean
-  }[]
 }
 
-export function TopNav({ className, links, ...props }: TopNavProps) {
+export function TopNav({className, ...props}: TopNavProps) {
+  const auth = useAuth()
+  const website = useWebsiteQuery({projectId: auth.user?.currentProjectId});
   return (
     <>
       <div className='md:hidden'>
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Button size='icon' variant='outline'>
-              <IconMenu />
+              <IconMenu/>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent side='bottom' align='start'>
-            {links.map(({ title, href, isActive, disabled }) => (
-              <DropdownMenuItem key={`${title}-${href}`} asChild>
-                <Link
-                  to={href}
-                  className={!isActive ? 'text-muted-foreground' : ''}
-                  disabled={disabled}
-                >
-                  {title}
-                </Link>
-              </DropdownMenuItem>
+            {website.data?.websites?.map(w => (
+                <SelectItem key={w.id} value={w.id}>{w.domain}</SelectItem>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
@@ -46,21 +31,26 @@ export function TopNav({ className, links, ...props }: TopNavProps) {
 
       <nav
         className={cn(
-          'hidden items-center space-x-4 md:flex lg:space-x-6',
+          'hidden items-center space-x-4 md:flex',
           className
         )}
         {...props}
       >
-        {links.map(({ title, href, isActive, disabled }) => (
-          <Link
-            key={`${title}-${href}`}
-            to={href}
-            disabled={disabled}
-            className={`text-sm font-medium transition-colors hover:text-primary ${isActive ? '' : 'text-muted-foreground'}`}
-          >
-            {title}
-          </Link>
-        ))}
+        <Select>
+          <SelectTrigger className='w-64 w-full'>
+            <SelectValue placeholder='Select website'/>
+          </SelectTrigger>
+          <SelectContent>
+            {website.data?.websites?.map(w => (
+                <SelectItem key={w.id} value={w.id}>
+                  <div>
+                    <div>{w.title}</div>
+                    <div>{w.domain}</div>
+                  </div>
+                </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </nav>
     </>
   )

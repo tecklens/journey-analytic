@@ -5,9 +5,16 @@ import {PassportModule} from '@nestjs/passport';
 import {JwtModule} from '@nestjs/jwt';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {BullModule} from '@nestjs/bullmq';
-import {UserRepository, UserTokenRepository, ProjectRepository, MemberRepository, UserActivityRepository} from "../../repositories/maria";
+import {
+  UserRepository,
+  UserTokenRepository,
+  ProjectRepository,
+  MemberRepository,
+  UserActivityRepository,
+  ApiKeyRepository
+} from "../../repositories/maria";
 import {ConfigModule, ConfigService} from "@nestjs/config";
-import {JwtStrategy, RefreshJwtStrategy} from "./strategy";
+import {ApiKeyStrategy, JwtStrategy, RefreshJwtStrategy} from "./strategy";
 
 const repositories = [
   UserRepository,
@@ -15,6 +22,7 @@ const repositories = [
   ProjectRepository,
   MemberRepository,
   UserActivityRepository,
+  ApiKeyRepository,
 ];
 
 @Module({
@@ -33,8 +41,9 @@ const repositories = [
       name: 'send-email',
     }),
   ],
-  providers: [AuthService, JwtStrategy, RefreshJwtStrategy, ...repositories],
+  providers: [AuthService, JwtStrategy, ApiKeyStrategy, RefreshJwtStrategy, ...repositories],
   controllers: [AuthController],
+  exports: [ApiKeyStrategy, JwtStrategy, AuthService]
 })
 export class AuthModule {
 }

@@ -1,7 +1,7 @@
 import {
-  IconBrowserCheck,
   IconChecklist,
   IconHelp,
+  IconKey,
   IconLayoutDashboard,
   IconNotification,
   IconPlayerRecord,
@@ -24,7 +24,7 @@ export const sidebarData: SidebarData = {
         },
         {
           title: 'Session Replay',
-          url: '/tasks',
+          url: '/sessions',
           icon: IconChecklist,
         },
         {
@@ -129,9 +129,9 @@ export const sidebarData: SidebarData = {
               icon: IconNotification,
             },
             {
-              title: 'Display',
-              url: '/settings/display',
-              icon: IconBrowserCheck,
+              title: 'Personal access keys',
+              url: '/settings/api-key',
+              icon: IconKey,
             },
             {
               title: 'Replay Setting',

@@ -10,6 +10,8 @@ import {SessionReplayPrimaryButtons} from './components/session-replay-primary-b
 import TasksProvider from './context/tasks-context'
 import {useMembersProjectQuery} from "@admin/api/project/members-project.query.ts";
 import {useState} from "react";
+import {debounce} from "lodash";
+import {PaginationState} from "@tanstack/react-table";
 
 export default function Members() {
   const [page, setPage] = useState({
@@ -42,7 +44,21 @@ export default function Members() {
           <SessionReplayPrimaryButtons />
         </div>
         <div className='-mx-4 flex-1 overflow-auto px-4 py-1 lg:flex-row lg:space-x-12 lg:space-y-0'>
-          <DataTable data={member.data?.data ?? []} columns={columns} />
+          <DataTable
+            data={member.data?.data ?? []}
+            columns={columns}
+            totalCount={member.data?.total ?? 0}
+            page={{
+              pageIndex: page.page,
+              pageSize: page.limit,
+            }}
+            onPageChange={debounce((p: PaginationState) => {
+              setPage({
+                page: p.pageSize,
+                limit: p.pageIndex,
+              })
+            }, 100)}
+          />
         </div>
       </Main>
 

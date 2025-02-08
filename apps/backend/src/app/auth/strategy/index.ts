@@ -4,3 +4,5 @@ export * from './jwt-auth.guard';
 export * from './jwt.strategy';
 export * from './refresh-auth.guard';
 export * from './refresh.strategy';
+export * from './apikey.guard';
+export * from './apikey.strategy';

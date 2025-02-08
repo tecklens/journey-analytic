@@ -1,20 +1,19 @@
-import {UserPlan} from "./user-plan.enum.js";
-import {UserId, UserRateLimitId, UserStatus, UserTokenId} from "../../types/index.js";
+import {UserId, UserPlan, UserRateLimitId, UserStatus, UserTokenId} from "../../types/index.js";
 import {AuthProviderEnum} from "./user.enums.js";
 
 export interface IUser {
   id: string;
-  firstName?: string | undefined;
-  lastName?: string | undefined;
-  email?: string | undefined;
-  username?: string | undefined;
-  profilePicture?: string | undefined;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  username?: string;
+  profilePicture?: string;
   showOnBoarding?: boolean;
   showOnBoardingTour?: number;
   jobTitle?: string;
   externalId?: string;
-  bio?: string | undefined;
-  urls?: string[] | undefined;
+  bio?: string;
+  urls?: string[];
   status: UserStatus;
   currentProjectId?: string;
 

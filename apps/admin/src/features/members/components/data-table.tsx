@@ -2,8 +2,6 @@ import * as React from 'react'
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFacetedRowModel,
@@ -11,28 +9,29 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from '@tanstack/react-table'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@admin/components/ui/table'
-import { DataTablePagination } from '../components/data-table-pagination'
-import { DataTableToolbar } from '../components/data-table-toolbar'
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from '@admin/components/ui/table'
+import {DataTablePagination} from '../components/data-table-pagination'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  totalCount: number
+  onPageChange: ({pageSize, pageIndex}: PaginationState) => void
+  page: PaginationState
 }
 
 export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+                                           columns,
+                                           data,
+                                           totalCount,
+                                           onPageChange,
+                                           page,
+                                         }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -49,7 +48,9 @@ export function DataTable<TData, TValue>({
       columnVisibility,
       rowSelection,
       columnFilters,
+      pagination: page
     },
+    pageCount: Math.ceil(totalCount / 10),
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
@@ -61,11 +62,17 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
+    onPaginationChange: (setPagination) => {
+      if (typeof setPagination !== 'function') return
+
+      const newPage =  setPagination(table.getState().pagination)
+      onPageChange(newPage)
+    },
+    manualPagination: true,
   })
 
   return (
     <div className='space-y-4'>
-      <DataTableToolbar table={table} />
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -77,9 +84,9 @@ export function DataTable<TData, TValue>({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}
@@ -116,7 +123,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table}/>
     </div>
   )
 }

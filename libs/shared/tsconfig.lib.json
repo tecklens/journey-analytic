@@ -8,7 +8,9 @@
     "emitDeclarationOnly": false,
     "types": ["node"],
     "module": "CommonJS",
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "strictPropertyInitialization": false,
+    "noImplicitReturns": false
   },
   "include": ["src/**/*.ts"],
   "references": []

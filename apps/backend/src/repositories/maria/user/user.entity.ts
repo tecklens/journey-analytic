@@ -60,6 +60,9 @@ export class UserEntity implements IUser {
   @Column({ name: 'current_project_id', length: 64, nullable: true })
   currentProjectId: string;
 
+  @Column({ name: 'current_website_id', length: 64, nullable: true })
+  currentWebsiteId: string;
+
   @Column({ name: 'change_pass_tx_id', length: 64, nullable: true })
   changePassTxId?: string;
 

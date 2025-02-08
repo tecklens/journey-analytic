@@ -1,4 +1,4 @@
-import { UserPlan } from "../../entities/index.js";
+import { UserPlan } from "../../types/index.js";
 export interface IJwtPayload {
     id: string;
     firstName?: string;
@@ -6,14 +6,14 @@ export interface IJwtPayload {
     email?: string;
     profilePicture?: string;
     projectId: string;
-    environmentId: string;
+    websiteId?: string;
     roles: string[];
     exp: number;
     plan: UserPlan;
 }
 export declare enum ApiAuthSchemeEnum {
     BEARER = "Bearer",
-    API_KEY = "ApiKey"
+    API_KEY = "JaKey"
 }
 export declare enum PassportStrategyEnum {
     JWT = "jwt",

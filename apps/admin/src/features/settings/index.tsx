@@ -1,5 +1,5 @@
 import {Outlet} from '@tanstack/react-router'
-import {IconBrowserCheck, IconNotification, IconPlayerRecord, IconTool, IconUser,} from '@tabler/icons-react'
+import {IconKey, IconNotification, IconPlayerRecord, IconTool, IconUser,} from '@tabler/icons-react'
 import {Separator} from '@admin/components/ui/separator'
 import {Header} from '@admin/components/layout/header'
 import {Main} from '@admin/components/layout/main'
@@ -60,10 +60,11 @@ const sidebarNavItems = [
     href: '/settings/notifications',
   },
   {
-    title: 'Display',
-    icon: <IconBrowserCheck size={18} />,
-    href: '/settings/display',
-  },{
+    title: 'Personal access keys',
+    icon: <IconKey size={18} />,
+    href: '/settings/api-key',
+  },
+  {
     title: 'Replay Setting',
     icon: <IconPlayerRecord size={18} />,
     href: '/settings/replay',

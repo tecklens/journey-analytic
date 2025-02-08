@@ -10,15 +10,16 @@ import process from "process";
 import {ConfigService} from "@nestjs/config";
 import {DocumentBuilder, SwaggerModule} from '@nestjs/swagger';
 import helmet from "helmet";
-import {urlencoded} from 'express';
+import {urlencoded, json} from 'express';
 import { initializeTransactionalContext } from 'typeorm-transactional';
+import {HttpRequestHeaderKeysEnum} from "@journey-analytic/shared";
 
 const corsOptionsDelegate = function (req: any, callback: any) {
   const corsOptions = {
     origin: false as boolean | string | string[] | undefined,
     preflightContinue: false,
     maxAge: 86400,
-    allowedHeaders: ['Content-Type', 'Authorization', 'sentry-trace'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'sentry-trace', HttpRequestHeaderKeysEnum.API_KEY],
     methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     exposedHeaders: ['Content-Disposition'],
   };
@@ -33,6 +34,7 @@ const corsOptionsDelegate = function (req: any, callback: any) {
       process.env.FRONT_BASE_URL ?? '',
       process.env.API_ROOT_URL ?? '',
       'http://localhost:4200',
+      'http://localhost:4201',
     ];
     if (process.env.WIDGET_BASE_URL && Array.isArray(corsOptions.origin)) {
       corsOptions.origin.push(process.env.WIDGET_BASE_URL);
@@ -74,6 +76,7 @@ async function bootstrap() {
   );
   app.use(
       urlencoded({ extended: true, limit: '2mb', parameterLimit: 10000 }),
+      json({ limit: '1mb'}),
   );
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors(corsOptionsDelegate);

@@ -4,7 +4,7 @@ exports.PassportStrategyEnum = exports.ApiAuthSchemeEnum = void 0;
 var ApiAuthSchemeEnum;
 (function (ApiAuthSchemeEnum) {
     ApiAuthSchemeEnum["BEARER"] = "Bearer";
-    ApiAuthSchemeEnum["API_KEY"] = "ApiKey";
+    ApiAuthSchemeEnum["API_KEY"] = "JaKey";
 })(ApiAuthSchemeEnum || (exports.ApiAuthSchemeEnum = ApiAuthSchemeEnum = {}));
 var PassportStrategyEnum;
 (function (PassportStrategyEnum) {

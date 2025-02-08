@@ -11,7 +11,9 @@
     "target": "es2021",
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "isolatedModules": false
+    "isolatedModules": false,
+    "noImplicitOverride": false,
+    "sourceMap": true,
   },
   "include": ["src/**/*.ts", "src/assets/**/*"],
   "exclude": [

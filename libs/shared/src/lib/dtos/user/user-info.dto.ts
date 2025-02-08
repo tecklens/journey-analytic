@@ -1,7 +1,7 @@
 import {IFailedLogin, IUser, IUserResetTokenCount} from "../../entities/index.js";
 
 export class UserInfoDto {
-  id?: string;
+  id: string;
   firstName?: string;
   lastName?: string;
   email?: string;
@@ -10,9 +10,9 @@ export class UserInfoDto {
   jobTitle?: string;
   bio?: string;
   urls?: string[];
-  plan?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
+  plan: number;
+  createdAt: Date;
+  updatedAt: Date;
 
   resetTokenCount?: IUserResetTokenCount;
   failedLogin?: IFailedLogin;
