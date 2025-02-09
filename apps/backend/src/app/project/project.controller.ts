@@ -82,7 +82,6 @@ export class ProjectController {
       @VisitorId() visitorId: string,
       @Query() payload: GetWebsiteConfigDto
   ) {
-    console.log(visitorId)
     return this.projectService.getConfig(user, userAgent, visitorId, payload);
   }
 }

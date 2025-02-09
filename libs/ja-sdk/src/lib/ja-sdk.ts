@@ -78,6 +78,7 @@ export class JaSdk {
                         'Content-Type': 'application/json',
                         'x-ja-api-key': `JaKey${this.apiKey}`
                     },
+                    signal: AbortSignal.timeout(5000)
                 }
             ).then(res => res.json())
                 .catch((err) => {
@@ -136,6 +137,7 @@ export class JaSdk {
                                         sessionId: this.sessionId,
                                         events
                                     }),
+                                    signal: AbortSignal.timeout(1000)
                                 }
                             )
 

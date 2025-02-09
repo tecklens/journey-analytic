@@ -3,18 +3,18 @@ import {
   ApiKeyRepository,
   MemberEntity,
   MemberRepository,
-  ProjectRepository, SessionRepository,
+  ProjectRepository,
+  SessionRepository,
   WebsiteRepository
 } from "../../repositories/maria";
 import {CreateProjectDto, GetWebsiteConfigDto, SearchMembersDto} from './dtos'
-import {IJwtPayload, MemberStatus, ROLES, IApiKey} from "@journey-analytic/shared";
+import {IApiKey, IJwtPayload, MemberStatus, ROLES} from "@journey-analytic/shared";
 import {ApiException, decryptApiKey, encryptApiKey, PaginatedResponseDto} from "../../types";
 import {Transactional} from 'typeorm-transactional';
 import {createHash} from "crypto";
 import hat from "hat";
 import {ENCRYPTION_KEY} from "../../consts";
 import {UAParser} from "ua-parser-js";
-import {BloomService} from "./bloom-filter.service";
 
 @Injectable()
 export class ProjectService {
@@ -24,7 +24,6 @@ export class ProjectService {
     private readonly apiKeyRepository: ApiKeyRepository,
     private readonly websiteRepository: WebsiteRepository,
     private readonly sessionRepository: SessionRepository,
-    private readonly bloomService: BloomService,
   ) {}
   async getMembers(
     u: IJwtPayload,
@@ -244,10 +243,7 @@ export class ProjectService {
     }
 
     // * check visitor
-    const isNew = !(await this.bloomService.hasVisitor(website.id, visitorId));
-    if (isNew) {
-      await this.bloomService.addVisitor(website.id, visitorId);
-    }
+    console.log(visitorId)
 
     const parser = new UAParser(userAgent);
     const result = parser.getResult();
