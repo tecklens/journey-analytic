@@ -12,6 +12,8 @@ export class SessionEntity implements ISession {
   @Column({ name: 'website_id', length: 64 })
   websiteId: string;
 
+  @Column({ name: 'visitor_id', length: 256, comment: 'VisitorId decorator' })
+  visitorId: string;
   @Column({ name: 'host', length: 256 })
   host: string;
   @Column({ name: 'browser', length: 128 })

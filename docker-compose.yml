@@ -1,0 +1,84 @@
+version: '1.0'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    depends_on:
+      - mariadb
+      - scylla
+      - redis
+    environment:
+      - SCYLLA_URL=scylla
+      - SCYLLA_KEYSPACE=janal_dev
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MYSQL_HOST=mariadb
+      - MYSQL_USER=ja
+      - MYSQL_PASS=ja_docker_2025
+      - MYSQL_DB=ja_dev
+      - JWT_SECRET=ja_2025
+      - REFRESH_TOKEN_SECRET=jar_2025
+      - STORE_ENCRYPTION_KEY=792345xxx157365521x207359395xxxx
+    ports:
+      - "3000:3000"
+    networks:
+      - ja_network
+
+  admin:
+    build:
+      context: .
+      dockerfile: apps/admin/Dockerfile
+    depends_on:
+      - backend
+    environment:
+      - VITE_BASE_DOMAIN=https://localhost:3000
+    ports:
+      - "4200:80"
+    networks:
+      - ja_network
+
+  mariadb:
+    image: mariadb:11
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ja_root
+      MYSQL_USER: ja                # Tạo user mới
+      MYSQL_PASSWORD: ja_docker_2025
+      MYSQL_DATABASE: ja_dev
+    ports:
+      - "3306:3306"
+    networks:
+      - ja_network
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  scylla:
+    image: scylladb/scylla:latest
+    restart: always
+    ports:
+      - "9042:9042"
+    networks:
+      - ja_network
+    volumes:
+      - scylla_data:/var/lib/scylla
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - ja_network
+    volumes:
+      - redis_data:/data
+
+networks:
+  ja_network:
+    driver: bridge
+
+volumes:
+  mariadb_data:
+  scylla_data:
+  redis_data:

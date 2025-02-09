@@ -1,11 +1,12 @@
-import {Controller, Get, Post, Body, Query, UseGuards, Put, Param} from "@nestjs/common";
+import {Body, Controller, Get, Param, Post, Put, Query, UseGuards} from "@nestjs/common";
 import {ApiOperation, ApiTags} from "@nestjs/swagger";
 import {ProjectService} from "./project.service";
 import {ApiKeyAuthGuard, JwtAuthGuard} from "../auth/strategy";
 import {ExternalApiAccessible, UserSession} from "../../types";
-import {IJwtPayload, IApiKey} from "@journey-analytic/shared";
+import {IApiKey, IJwtPayload} from "@journey-analytic/shared";
 import {CreateProjectDto, GetWebsiteConfigDto, SearchMembersDto} from "./dtos";
 import {UserAgent} from "../../types/decorators/user-argnet.decorator";
+import {VisitorId} from "../../types/decorators/visitor.decorator";
 
 @Controller("project")
 @ApiTags('Project')
@@ -75,7 +76,13 @@ export class ProjectController {
   @Get('config')
   @UseGuards(ApiKeyAuthGuard)
   @ExternalApiAccessible()
-  getConfigProject(@UserSession() user: IJwtPayload, @UserAgent() userAgent: string, @Query() payload: GetWebsiteConfigDto) {
-    return this.projectService.getConfig(user, userAgent, payload);
+  getConfigProject(
+      @UserSession() user: IJwtPayload,
+      @UserAgent() userAgent: string,
+      @VisitorId() visitorId: string,
+      @Query() payload: GetWebsiteConfigDto
+  ) {
+    console.log(visitorId)
+    return this.projectService.getConfig(user, userAgent, visitorId, payload);
   }
 }
