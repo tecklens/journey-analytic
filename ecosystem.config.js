@@ -10,8 +10,8 @@ module.exports = {
         },
         {
             name: "ja-admin", // Tên ứng dụng ReactJS
-            script: "serve",
-            args: "-s dist/apps/admin -p 4202",
+            script: "npx",
+            args: "serve dist/apps/admin -s -p 4202",
             env_production: {
                 NODE_ENV: "production",
                 VITE_BASE_DOMAIN: 'https://ja-measurement.wolfx.app'
