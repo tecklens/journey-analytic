@@ -2,7 +2,10 @@
   "name": "@journey-analytic/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build:backend": "nx build backend --configuration=production && cp apps/backend/.env.production dist/apps/backend/",
+    "build:admin": "nx build admin --configuration=production"
+  },
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",

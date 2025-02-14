@@ -14,6 +14,7 @@ module.exports = {
             args: "-s dist/apps/admin -p 4202",
             env_production: {
                 NODE_ENV: "production",
+                VITE_BASE_DOMAIN: 'https://ja-measurement.wolfx.app'
             },
         },
     ],
