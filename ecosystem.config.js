@@ -12,7 +12,7 @@ module.exports = {
             name: "ja-admin", // Tên ứng dụng ReactJS
             script: "npx",
             args: "serve dist/apps/admin -s -p 4202",
-            env_production: {
+            env: {
                 NODE_ENV: "production",
                 VITE_BASE_DOMAIN: 'https://ja-measurement.wolfx.app'
             },
