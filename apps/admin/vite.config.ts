@@ -11,7 +11,9 @@ export default defineConfig(async () => {
     root: __dirname,
     server:{
       port: 4202,
-      host: 'localhost',
+      host: true, // Cho phép truy cập từ bên ngoài
+      strictPort: true,
+      allowedHosts: ['ja.wolfx.app'],
     },
     preview:{
       port: 4302,
