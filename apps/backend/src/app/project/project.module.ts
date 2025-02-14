@@ -6,6 +6,7 @@ import {
     BloomFilterVisitorRepository,
     MemberRepository,
     ProjectRepository,
+    ProjectSettingRepository,
     SessionRepository,
     WebsiteRepository
 } from "../../repositories/maria";
@@ -19,6 +20,7 @@ const repositories = [
     WebsiteRepository,
     SessionRepository,
     BloomFilterVisitorRepository,
+    ProjectSettingRepository,
 ];
 
 @Module({

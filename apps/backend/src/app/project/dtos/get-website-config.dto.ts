@@ -16,4 +16,9 @@ export class GetWebsiteConfigDto {
     @IsString()
     @IsOptional()
     screen: string;
+
+    @ApiPropertyOptional()
+    @IsString()
+    @IsOptional()
+    userId?: string;
 }

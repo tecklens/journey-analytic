@@ -1,6 +1,6 @@
 export interface StorageOptions {
-  dbName?: string;
-  storeName?: string;
+  dbName?: string | null;
+  storeName?: string | null;
 }
 
 export class Storage {
@@ -10,7 +10,7 @@ export class Storage {
 
   constructor(options: StorageOptions) {
     this.dbName = options.dbName ?? 'ja-db'
-    this.storeName = options.storeName ?? 'storage'
+    this.storeName = options.storeName ?? 'rr_event'
     this.db = null;
 
     this.initDB()

@@ -6,7 +6,7 @@ export const EventRrwebEntity = {
     time: 'timestamp',
   },
   table_options: {
-    default_time_to_live: 604800 // 7 ngày = 604800 giây
+    default_time_to_live: 1209600 // 14 ngày = 1209600 giây
   },
   key: ['sessionId', 'time'],
   table_name: 'RrWebEvent',

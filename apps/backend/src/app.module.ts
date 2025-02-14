@@ -15,12 +15,16 @@ import { ProjectModule } from "./app/project/project.module";
 import { APP_INTERCEPTOR } from "@nestjs/core";
 import { RequestSizeInterceptor } from "./types/decorators/log-request-size.interceptor";
 import { ScyllaModule } from "./app/scylla/scylla.module";
+import { ScheduleModule } from "@nestjs/schedule";
+import { EPOCH_TIME } from "./consts";
+import { WebsiteModule } from "./app/website/website.module";
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     CacheModule.register({
       isGlobal: true,
       store: createKeyv({
@@ -47,7 +51,7 @@ import { ScyllaModule } from "./app/scylla/scylla.module";
     }),
     SnowflakeIdModule.forRoot({
       global: true,
-      customEpoch: 1737621145000, // Custom epoch (Jan 23, 2025)
+      customEpoch: EPOCH_TIME, // Custom epoch (Jan 23, 2025)
       machineId: {
         workerId: 1, // Worker ID
         dataCenterId: 1, // Data Center ID
@@ -80,6 +84,7 @@ import { ScyllaModule } from "./app/scylla/scylla.module";
     UserModule,
     ProjectModule,
     ScyllaModule,
+    WebsiteModule,
     // ChannelModule,
   ],
   controllers: [],

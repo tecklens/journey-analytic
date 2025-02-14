@@ -4,7 +4,7 @@ import {ProjectService} from "./project.service";
 import {ApiKeyAuthGuard, JwtAuthGuard} from "../auth/strategy";
 import {ExternalApiAccessible, UserSession} from "../../types";
 import {IApiKey, IJwtPayload} from "@journey-analytic/shared";
-import {CreateProjectDto, GetWebsiteConfigDto, SearchMembersDto} from "./dtos";
+import {CreateProjectDto, GetWebsiteConfigDto, SearchMembersDto, UpdateProjectConfigDto} from "./dtos";
 import {UserAgent} from "../../types/decorators/user-argnet.decorator";
 import {VisitorId} from "../../types/decorators/visitor.decorator";
 
@@ -40,13 +40,13 @@ export class ProjectController {
   }
 
   @Put('/member/lock/:id')
-  @ApiOperation({ summary: 'api khóa người dùng', tags: ['admin'] })
+  @ApiOperation({summary: 'api khóa người dùng', tags: ['admin']})
   lockUser(@UserSession() user: IJwtPayload, @Param('id') id: string) {
     return this.projectService.lockMember(user, id);
   }
 
   @Put('/member/unlock/:id')
-  @ApiOperation({ summary: 'api mở khóa người dùng', tags: ['admin'] })
+  @ApiOperation({summary: 'api mở khóa người dùng', tags: ['admin']})
   unlockUser(@UserSession() user: IJwtPayload, @Param('id') id: string) {
     return this.projectService.unlockMember(user, id);
   }
@@ -73,14 +73,24 @@ export class ProjectController {
     return await this.projectService.getApiKey(user);
   }
 
+  @Put('setting')
+  updateProjectSetting(@UserSession() user: IJwtPayload, @Body() payload: UpdateProjectConfigDto) {
+    return this.projectService.updateProjectSetting(user, payload)
+  }
+
+  @Get('setting/:projectId')
+  getProjectSetting(@UserSession() user: IJwtPayload, @Param('projectId') projectId: string) {
+    return this.projectService.getProjectSetting(user, projectId);
+  }
+
   @Get('config')
   @UseGuards(ApiKeyAuthGuard)
   @ExternalApiAccessible()
   getConfigProject(
-      @UserSession() user: IJwtPayload,
-      @UserAgent() userAgent: string,
-      @VisitorId() visitorId: string,
-      @Query() payload: GetWebsiteConfigDto
+    @UserSession() user: IJwtPayload,
+    @UserAgent() userAgent: string,
+    @VisitorId() visitorId: string,
+    @Query() payload: GetWebsiteConfigDto
   ) {
     return this.projectService.getConfig(user, userAgent, visitorId, payload);
   }

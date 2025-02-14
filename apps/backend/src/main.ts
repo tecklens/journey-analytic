@@ -76,7 +76,7 @@ async function bootstrap() {
   );
   app.use(
       urlencoded({ extended: true, limit: '2mb', parameterLimit: 10000 }),
-      json({ limit: '1mb'}),
+      json({ limit: '500kb'}),
   );
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   app.enableCors(corsOptionsDelegate);

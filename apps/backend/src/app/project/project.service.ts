@@ -1,30 +1,35 @@
-import {ConflictException, ForbiddenException, Injectable} from "@nestjs/common";
+import {ConflictException, ForbiddenException, Inject, Injectable} from "@nestjs/common";
 import {
   ApiKeyRepository,
   MemberEntity,
   MemberRepository,
-  ProjectRepository,
+  ProjectRepository, ProjectSettingRepository,
   SessionRepository,
   WebsiteRepository
 } from "../../repositories/maria";
-import {CreateProjectDto, GetWebsiteConfigDto, SearchMembersDto} from './dtos'
+import {ClientConfigDto, CreateProjectDto, GetWebsiteConfigDto, SearchMembersDto, UpdateProjectConfigDto} from './dtos'
 import {IApiKey, IJwtPayload, MemberStatus, ROLES} from "@journey-analytic/shared";
 import {ApiException, decryptApiKey, encryptApiKey, PaginatedResponseDto} from "../../types";
 import {Transactional} from 'typeorm-transactional';
 import {createHash} from "crypto";
 import hat from "hat";
-import {ENCRYPTION_KEY} from "../../consts";
+import {CLIENT_CONFIG_CACHE_KEY, CLIENT_CONFIG_CACHE_TTL, ENCRYPTION_KEY} from "../../consts";
 import {UAParser} from "ua-parser-js";
+import {Cache, CACHE_MANAGER} from "@nestjs/cache-manager";
 
 @Injectable()
 export class ProjectService {
   constructor(
     private readonly projectRepository: ProjectRepository,
+    private readonly projectSettingRepository: ProjectSettingRepository,
     private readonly memberRepository: MemberRepository,
     private readonly apiKeyRepository: ApiKeyRepository,
     private readonly websiteRepository: WebsiteRepository,
     private readonly sessionRepository: SessionRepository,
-  ) {}
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {
+  }
+
   async getMembers(
     u: IJwtPayload,
     payload: SearchMembersDto,
@@ -228,10 +233,17 @@ export class ProjectService {
     }
   }
 
-  async getConfig(u: IJwtPayload, userAgent: string, visitorId: string, payload: GetWebsiteConfigDto) {
+
+  @Transactional()
+  async getConfig(u: IJwtPayload, userAgent: string, visitorId: string, payload: GetWebsiteConfigDto): Promise<ClientConfigDto> {
+    const key = `${CLIENT_CONFIG_CACHE_KEY}_${visitorId}`;
+    const cacheData = await this.cacheManager.get<ClientConfigDto>(key);
+
+    if (cacheData) return cacheData;
+
     let website = await this.websiteRepository.findByDomain(
-        u.projectId,
-        payload.domain
+      u.projectId,
+      payload.domain
     )
     if (!website) {
       website = await this.websiteRepository.save({
@@ -241,9 +253,6 @@ export class ProjectService {
         title: payload.title,
       })
     }
-
-    // * check visitor
-    console.log(visitorId)
 
     const parser = new UAParser(userAgent);
     const result = parser.getResult();
@@ -259,8 +268,30 @@ export class ProjectService {
       cpu: result.cpu.architecture,
     })
 
-    return {
+    const res: ClientConfigDto = {
       session: newSession.id,
+      enableReplay: await this.projectSettingRepository.existByProjectIdAndCustomer(u.projectId, payload.userId)
     }
+
+    await this.cacheManager.set<ClientConfigDto>(key, res, CLIENT_CONFIG_CACHE_TTL);
+
+    return res;
+  }
+
+  async updateProjectSetting(u: IJwtPayload, payload: UpdateProjectConfigDto) {
+    return this.projectSettingRepository.save({
+      projectId: u.projectId,
+      users: payload.users ?? [],
+      status: payload.status,
+      createdBy: u.id,
+      updatedBy: u.id,
+    })
+  }
+
+  async getProjectSetting(u: IJwtPayload, projectId: string) {
+    if (u.projectId != projectId) return null;
+    return this.projectSettingRepository.findOneBy({
+      projectId: projectId,
+    })
   }
 }

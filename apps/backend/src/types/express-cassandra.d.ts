@@ -16,9 +16,12 @@ declare module 'express-cassandra' {
     export interface ScyllaClient extends Client {
         loadSchema(modelName: string, schema: any): any;
         instance: any;
+        doBatch: (queries: string[], callback: (err) => void) => void;
     }
 
-    export interface datatypes {
-        Long: any;
+    export const datatypes = {
+        Long: {
+            fromString: (d: string) => ''
+        }
     }
 }

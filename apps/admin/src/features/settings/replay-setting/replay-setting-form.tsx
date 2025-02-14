@@ -1,7 +1,6 @@
 import {z} from 'zod'
 import {useForm} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
-import {toast} from '@admin/hooks/use-toast'
 import {Button} from '@admin/components/ui/button'
 import {
   Form,
@@ -13,8 +12,10 @@ import {
   FormMessage,
 } from '@admin/components/ui/form'
 import {Tag, TagInput} from "emblor";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Switch} from "@admin/components/ui/switch.tsx";
+import {useUpdateProjectSettingMutation} from "@admin/api/project/update-project-setting.mutation.ts";
+import {useProjectSettingQuery} from "@admin/api/project/project-setting-query.ts";
 
 const displayFormSchema = z.object({
   users: z.array(
@@ -23,7 +24,7 @@ const displayFormSchema = z.object({
       text: z.string(),
     }),
   ),
-  status: z.boolean()
+  status: z.coerce.number()
 })
 
 type DisplayFormValues = z.infer<typeof displayFormSchema>
@@ -31,26 +32,30 @@ type DisplayFormValues = z.infer<typeof displayFormSchema>
 // This can come from your database or API.
 const defaultValues: Partial<DisplayFormValues> = {
   users: [],
-  status: true
+  status: 0
 }
 
 export function ReplaySettingForm() {
+  const updateProject = useUpdateProjectSettingMutation();
+  const project = useProjectSettingQuery()
   const form = useForm<DisplayFormValues>({
     resolver: zodResolver(displayFormSchema),
     defaultValues,
   })
   const [tags, setTags] = useState<Tag[]>([]);
 
-  function onSubmit(data: DisplayFormValues) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
+  async function onSubmit(data: DisplayFormValues) {
+    await updateProject.mutateAsync({
+      status: data.status,
+      users: data.users?.map(e => e.text)
     })
   }
+
+  useEffect(() => {
+    if (project.data) {
+      form.reset(project.data)
+    }
+  }, [project.status])
 
   return (
     <Form {...form}>
@@ -62,9 +67,10 @@ export function ReplaySettingForm() {
             <FormItem className="flex flex-col items-start">
               <FormLabel className="text-left">Enable/ disable record session</FormLabel>
               <FormDescription>
-                Note: when recording user sessions, your website will load additional libraries to record sessions and increase network bandwidth.
+                Note: when recording user sessions, your website will load additional libraries to record sessions and
+                increase network bandwidth.
               </FormDescription>
-              <Switch checked={field.value} onCheckedChange={field.onChange}/>
+              <Switch checked={field.value === 1} onCheckedChange={field.onChange}/>
             </FormItem>
           )}
         />
@@ -97,7 +103,7 @@ export function ReplaySettingForm() {
             </FormItem>
           )}
         />
-        <Button type='submit'>Update</Button>
+        <Button disabled={updateProject.isPending || project.isPending} type='submit'>Update</Button>
       </form>
     </Form>
   )
