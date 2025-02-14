@@ -10,11 +10,11 @@ export default defineConfig(async () => {
   return {
     root: __dirname,
     server:{
-      port: 4202,
+      port: 4200,
       host: 'localhost',
     },
     preview:{
-      port: 4302,
+      port: 4300,
       host: 'localhost',
     },
     plugins: [
