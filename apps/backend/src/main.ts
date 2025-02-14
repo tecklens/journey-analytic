@@ -33,7 +33,7 @@ const corsOptionsDelegate = function (req: any, callback: any) {
     corsOptions.origin = [
       process.env.FRONT_BASE_URL ?? '',
       process.env.API_ROOT_URL ?? '',
-      'http://localhost:4200',
+      'http://localhost:4202',
       'http://localhost:4201',
     ];
     if (process.env.WIDGET_BASE_URL && Array.isArray(corsOptions.origin)) {
