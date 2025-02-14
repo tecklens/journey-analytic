@@ -11,9 +11,7 @@ export default defineConfig(async () => {
     root: __dirname,
     server:{
       port: 4202,
-      host: true, // Cho phép truy cập từ bên ngoài
-      strictPort: true,
-      allowedHosts: ['ja.wolfx.app'],
+      host: 'localhost',
     },
     preview:{
       port: 4302,
@@ -33,7 +31,7 @@ export default defineConfig(async () => {
     //  plugins: [ nxViteTsPaths() ],
     // },
     build: {
-      outDir: './dist',
+      outDir: '../../dist/apps/admin',
       emptyOutDir: true,
       reportCompressedSize: true,
       commonjsOptions: {
