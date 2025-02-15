@@ -19,6 +19,7 @@ import {ScheduleModule} from "@nestjs/schedule";
 import {EPOCH_TIME} from "./consts";
 import {WebsiteModule} from "./app/website/website.module";
 import {join} from "path";
+import * as process from 'process';
 
 console.log(process.env.NODE_ENV, join(__dirname, `.env.production`))
 
