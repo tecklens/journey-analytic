@@ -20,7 +20,7 @@ import {EPOCH_TIME} from "./consts";
 import {WebsiteModule} from "./app/website/website.module";
 import {join} from "path";
 
-console.log(join(__dirname, `.env.production`))
+console.log(process.env.NODE_ENV, join(__dirname, `.env.production`))
 
 @Module({
     imports: [
