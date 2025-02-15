@@ -19,8 +19,11 @@ import {ScheduleModule} from "@nestjs/schedule";
 import {EPOCH_TIME} from "./consts";
 import {WebsiteModule} from "./app/website/website.module";
 import * as path from "path";
+import * as fs from 'fs';
 
-console.log(process.env.NODE_ENV, path.resolve(__dirname, `.env.production`))
+console.log(process.env.NODE_ENV === 'production' ? path.resolve(__dirname, `.env.production`) : '.env')
+
+console.log('File exists:', fs.existsSync(path.resolve(__dirname, `.env.production`)));
 
 @Module({
     imports: [
