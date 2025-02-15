@@ -18,15 +18,15 @@ import {ScyllaModule} from "./app/scylla/scylla.module";
 import {ScheduleModule} from "@nestjs/schedule";
 import {EPOCH_TIME} from "./consts";
 import {WebsiteModule} from "./app/website/website.module";
-import {join} from "path";
+import * as path from "path";
 
-console.log(process.env.NODE_ENV, join(__dirname, `.env.production`))
+console.log(process.env.NODE_ENV, path.resolve(__dirname, `.env.production`))
 
 @Module({
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
-            envFilePath: process.env.NODE_ENV === 'production' ? join(__dirname, `.env.production`) : '.env',
+            envFilePath: process.env.NODE_ENV === 'production' ? path.resolve(__dirname, `.env.production`) : '.env',
         }),
         ScheduleModule.forRoot(),
         CacheModule.register({
