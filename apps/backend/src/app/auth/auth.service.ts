@@ -352,6 +352,7 @@ export class AuthService {
 
     // tạo api key cho từng project
     const key = await this.generateUniqueApiKey();
+    console.log(ENCRYPTION_KEY, 'test')
     const encryptedApiKey = encryptApiKey(key, ENCRYPTION_KEY);
     const hashedApiKey = createHash('sha256').update(key).digest('hex');
 
