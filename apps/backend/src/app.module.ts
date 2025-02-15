@@ -24,7 +24,7 @@ import {join} from "path";
     imports: [
         ConfigModule.forRoot({
             isGlobal: true,
-            envFilePath: process.env.NODE_ENV === 'production' ? join(__dirname, `.env.${process.env.NODE_ENV}`) : '.env',
+            envFilePath: process.env.NODE_ENV === 'production' ? join(__dirname, `.env.production`) : '.env',
         }),
         ScheduleModule.forRoot(),
         CacheModule.register({
