@@ -88,5 +88,5 @@ async function bootstrap() {
 bootstrap();
 
 function isBlueprintRoute(url: string) {
-  return url.startsWith('/v1/blueprints');
+  return url.includes('project/config') || url.includes('event/collects') || url.startsWith('/v1/blueprints');
 }
