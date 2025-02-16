@@ -35,7 +35,7 @@ export class JaSdk {
   constructor(options?: JaSdkOptions & StorageOptions) {
     this.apiEndpoint = options?.apiEndpoint ?? this.getAttribute(SCRIPT_KEY.API_ENDPOINT) ?? 'https://ja-measurement.wolfx.app';
     if (!options?.apiKey && !this.getAttribute(SCRIPT_KEY.API_KEY)) {
-      throw new Error('Api Key not found');
+      this.log('Api Key not found');
     }
     this.apiKey = options?.apiKey ?? this.getAttribute(SCRIPT_KEY.API_KEY) ?? '';
     this.intervalSyncData = options?.intervalSyncData ?? parseInt(this.getAttribute(SCRIPT_KEY.INTERVAL_SYNC_DATA) ?? '5000');
@@ -52,9 +52,6 @@ export class JaSdk {
     this.enableReplay = false;
     this.userId = options?.userId ?? this.getAttribute(SCRIPT_KEY.USER_ID);
     this.logging = this.getAttribute(SCRIPT_KEY.LOGGING) == 'true';
-
-    // advancedThrottle(() => this.init(), 300, {leading: true})();
-    this.init()
   }
 
   async init() {

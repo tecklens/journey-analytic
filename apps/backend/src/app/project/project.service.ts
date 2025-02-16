@@ -260,6 +260,7 @@ export class ProjectService {
     const newSession = await this.sessionRepository.save({
       projectId: u.projectId,
       websiteId: website.id,
+      visitorId,
       host: payload.domain,
       browser: result.browser.name,
       os: result.os.name,
