@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build:backend": "nx build backend --configuration=production && cp apps/backend/.env dist/",
+    "build:backend": "nx build backend --configuration=production && cp apps/backend/.env.production dist/apps/backend/",
     "build:admin": "nx build admin --configuration=production"
   },
   "private": true,
