@@ -2,7 +2,6 @@ import {Logger, Module} from "@nestjs/common";
 import * as cassandra from 'express-cassandra';
 import {scyllaEntities} from "../../repositories/scylla";
 import {ConfigService} from "@nestjs/config";
-import {join} from "path";
 
 @Module({
     providers: [

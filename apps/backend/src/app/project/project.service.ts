@@ -58,7 +58,8 @@ export class ProjectService {
 
     // tạo api key cho từng project
     const key = await this.generateUniqueApiKey();
-    const encryptedApiKey = encryptApiKey(key, ENCRYPTION_KEY);
+    const encryptKey = ENCRYPTION_KEY()
+    const encryptedApiKey = encryptApiKey(key, encryptKey);
     const hashedApiKey = createHash('sha256').update(key).digest('hex');
 
     await this.apiKeyRepository.save({
@@ -177,10 +178,10 @@ export class ProjectService {
     const keys = await this.apiKeyRepository.getApiKeys(
       user.projectId,
     );
-
+    const encryptKey = ENCRYPTION_KEY()
     return keys.map((apiKey: IApiKey) => {
       return {
-        key: decryptApiKey(apiKey.key, ENCRYPTION_KEY),
+        key: decryptApiKey(apiKey.key, encryptKey),
         userId: apiKey.userId,
         projectId: apiKey.projectId,
       };
@@ -197,7 +198,7 @@ export class ProjectService {
     }
 
     const key = await this.generateUniqueApiKey();
-    const encryptedApiKey = encryptApiKey(key, ENCRYPTION_KEY);
+    const encryptedApiKey = encryptApiKey(key, ENCRYPTION_KEY());
     const hashedApiKey = createHash('sha256').update(key).digest('hex');
 
     return this.apiKeyRepository.save({
