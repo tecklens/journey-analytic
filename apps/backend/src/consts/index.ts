@@ -1,4 +1,3 @@
-
 export const ENCRYPTION_KEY = process.env.STORE_ENCRYPTION_KEY ?? 'sk.'
 
 export const CLIENT_CONFIG_CACHE_KEY = 'cconfig';
