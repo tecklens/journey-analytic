@@ -5,7 +5,7 @@ module.exports = {
             script: 'npm run start:backend:prod',
             env: {
                 NODE_ENV: "production",
-                PORT: 3000
+                PORT: 3002
             },
             env_file: '.env.production'
         },
