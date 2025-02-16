@@ -2,9 +2,8 @@ module.exports = {
     apps: [
         {
             name: "ja-backend", // Tên ứng dụng NestJS
-            cwd: "dist/apps/backend",
-            script: "main.js",
-            env_production: {
+            script: 'npm run start:backend:prod',
+            env: {
                 NODE_ENV: "production",
                 PORT: 3002
             },
