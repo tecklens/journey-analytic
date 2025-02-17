@@ -78,9 +78,9 @@ export class ProjectController {
     return this.projectService.updateProjectSetting(user, payload)
   }
 
-  @Get('setting/:projectId')
-  getProjectSetting(@UserSession() user: IJwtPayload, @Param('projectId') projectId: string) {
-    return this.projectService.getProjectSetting(user, projectId);
+  @Get('setting')
+  getProjectSetting(@UserSession() user: IJwtPayload) {
+    return this.projectService.getProjectSetting(user);
   }
 
   @Get('config')

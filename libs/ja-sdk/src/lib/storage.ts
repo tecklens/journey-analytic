@@ -17,7 +17,7 @@ export class Storage {
   }
 
   private initDB() {
-    const request = indexedDB.open(this.dbName, 1);
+    const request = indexedDB.open(this.dbName, 2);
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;

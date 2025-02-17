@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {IsArray, IsDefined, IsOptional, IsString} from 'class-validator';
+import {IsArray, IsDefined, IsInt, IsOptional, IsString} from 'class-validator';
 
 export class UpdateProjectConfigDto {
   @ApiProperty()
-  @IsString()
+  @IsInt()
   @IsDefined()
   status: number;
 

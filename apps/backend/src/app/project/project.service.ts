@@ -271,6 +271,7 @@ export class ProjectService {
     })
 
     const res: ClientConfigDto = {
+      websiteId: website.id,
       session: newSession.id,
       enableReplay: await this.projectSettingRepository.existByProjectIdAndCustomer(u.projectId, payload.userId)
     }
@@ -281,6 +282,7 @@ export class ProjectService {
   }
 
   async updateProjectSetting(u: IJwtPayload, payload: UpdateProjectConfigDto) {
+    console.log(payload)
     return this.projectSettingRepository.save({
       projectId: u.projectId,
       users: payload.users ?? [],
@@ -290,10 +292,9 @@ export class ProjectService {
     })
   }
 
-  async getProjectSetting(u: IJwtPayload, projectId: string) {
-    if (u.projectId != projectId) return null;
+  async getProjectSetting(u: IJwtPayload) {
     return this.projectSettingRepository.findOneBy({
-      projectId: projectId,
+      projectId: u.projectId,
     })
   }
 }

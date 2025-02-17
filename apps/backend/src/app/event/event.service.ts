@@ -45,8 +45,8 @@ export class EventService implements OnModuleInit {
     }
 
     if (payload.oE) {
-      let queries = []
-      for (let ev of payload.oE) {
+      const queries = []
+      for (const ev of payload.oE) {
         const query = new this.originalEvent({
           id: orm.datatypes.Long.fromString(this.snowflakeIdService.generate().toString()),
           eventType: ev.event,
@@ -98,7 +98,7 @@ export class EventService implements OnModuleInit {
   async statsEventEvery10Minutes() {
     const websites = await this.websiteRepository.findBy({});
 
-    for (let website of websites) {
+    for (const website of websites) {
       const quarterPoint = this.calculateJobId();
       await this.statEventQueue.add('website', {
         websiteId: website.id,
@@ -124,11 +124,11 @@ export class EventService implements OnModuleInit {
       }
     })
 
-    let groupByEvent: Record<string, number> = {}
+    const groupByEvent: Record<string, number> = {}
     let views = 0;
     let visits = 0;
     if (events.length > 0) {
-      for (let event of events) {
+      for (const event of events) {
         if (!has(groupByEvent, event.eventType)) {
           groupByEvent[event.eventType] = 0;
         }

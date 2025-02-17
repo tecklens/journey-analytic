@@ -1,6 +1,6 @@
 export const EventEntity = {
   fields: {
-    id: 'varchar',
+    id: 'bigint',
     eventType: 'smallint',
     eventKey: 'varchar',
     projectId: 'varchar',
